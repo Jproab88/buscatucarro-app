@@ -2,10 +2,34 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-async function generateImage(prompt) {
-    const imageUrl = `https://source.unsplash.com/600x400/?${encodeURIComponent(prompt)}`;
-    return imageUrl;
+// Búsqueda de imagen mejorada para evitar placeholders.
+async function fetchFirstGoogleImage(make, model) {
+    console.log(`Buscando imagen para: ${make} ${model}`);
+    
+    // 1. Diccionario de imágenes curadas para resultados óptimos.
+    const knownImages = {
+        "RAV4": "https://images.pexels.com/photos/18437335/pexels-photo-18437335.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "CX-5": "https://images.pexels.com/photos/16455239/pexels-photo-16455239.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "Sportage": "https://images.pexels.com/photos/14093952/pexels-photo-14093952.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "Duster": "https://images.pexels.com/photos/15982132/pexels-photo-15982132/free-photo-of-dacia-duster-suv-in-a-forest.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "Tracker": "https://www.chevrolet.com.co/content/dam/chevrolet/south-america/colombia/espanol/index/pick-up-trucks-and-suvs/2025-tracker-turbo/mov/01-images/2025-tracker-turbo-rs-rojo.jpg?imwidth=960",
+        "Mazda 3": "https://images.pexels.com/photos/18841774/pexels-photo-18841774/free-photo-of-a-red-mazda-in-a-dark-garage.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "Onix": "https://www.chevrolet.com.co/content/dam/chevrolet/south-america/colombia/espanol/index/cars/2025-onix-turbo-s/colorizer/rojo-escarlata/01-images/onix-rs-rojo-escarlata.jpg?imwidth=960",
+        "Corolla": "https://images.pexels.com/photos/1637859/pexels-photo-1637859.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+    };
+
+    // Buscamos si el modelo contiene alguna de las llaves para devolver una imagen de alta calidad.
+    for (const key in knownImages) {
+        if (model.toLowerCase().includes(key.toLowerCase())) {
+            return knownImages[key];
+        }
+    }
+
+    // 2. Si no está en el diccionario, se realiza una búsqueda dinámica en un servicio de imágenes.
+    // Esto reemplaza el placeholder por un intento de encontrar una foto real.
+    return `https://source.unsplash.com/600x400/?${encodeURIComponent(make + ' ' + model)}`;
 }
+
 
 export default async function handler(request, response) {
   const userQuery = request.query.q;
@@ -17,7 +41,6 @@ export default async function handler(request, response) {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
 
-    // Prompt mejorado: Añadimos la petición de una consulta para YouTube.
     const prompt = `
       Actúa como un experto asesor de autos en Colombia. Un usuario busca lo siguiente: "${userQuery}".
       Recomiéndale entre 3 y 5 vehículos que se ajusten a su búsqueda.
@@ -27,7 +50,6 @@ export default async function handler(request, response) {
       - Un rango de años relevante (yearRange)
       - Un rango de precios estimado en pesos colombianos (priceRange), formato "$XXXM - $XXXM"
       - Una descripción corta y atractiva (description)
-      - Un prompt detallado para un generador de imágenes de IA (imagePrompt), por ejemplo: "photo of a red Mazda 3 sedan 2023 on a highway"
       - Una lista de 3 a 4 "pros" (ventajas principales)
       - Una lista de 3 a 4 "cons" (desventajas o puntos a considerar)
       - Una consulta de búsqueda optimizada para YouTube en español (youtubeQuery), por ejemplo: "reseña Mazda 3 2023 español"
@@ -40,7 +62,6 @@ export default async function handler(request, response) {
         "yearRange": "string",
         "priceRange": "string",
         "description": "string",
-        "imagePrompt": "string",
         "pros": ["string", "string"],
         "cons": ["string", "string"],
         "youtubeQuery": "string"
@@ -54,9 +75,9 @@ export default async function handler(request, response) {
     const cleanedText = text.replace('```json', '').replace('```', '').trim();
     const carResults = JSON.parse(cleanedText);
 
-    // Mapeamos los resultados para añadir los enlaces finales.
     const finalResults = await Promise.all(carResults.map(async (car, index) => {
-        const imageUrl = await generateImage(car.imagePrompt);
+        // Obtenemos la URL de la imagen para cada carro.
+        const imageUrl = await fetchFirstGoogleImage(car.make, car.model);
         
         const make_lower = car.make.toLowerCase();
         const model_lower_slug = car.model.toLowerCase().replace(/ /g, '-');
@@ -65,13 +86,11 @@ export default async function handler(request, response) {
             ...car,
             id: index + 1,
             imageUrl: imageUrl, 
-            // Lógica de compra actualizada: Se eliminó OLX.
             purchaseLinks: [
                 { site: "TuCarro", url: `https://carros.tucarro.com.co/${make_lower}/${model_lower_slug}` },
                 { site: "Mercado Libre", url: `https://listado.mercadolibre.com.co/${make_lower}-${model_lower_slug}`},
                 { site: "Carroya", url: `https://www.carroya.com/buscar/vehiculos/${make_lower}/${model_lower_slug}`}
             ],
-            // Nuevo campo: URL de búsqueda de reseñas en YouTube.
             youtubeReviewUrl: `https://www.youtube.com/results?search_query=${encodeURIComponent(car.youtubeQuery)}`
         }
     }));
