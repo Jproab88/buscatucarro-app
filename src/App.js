@@ -1,100 +1,90 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Car, MessageSquare, X, Send, Bot, User, ArrowLeft, ExternalLink, Loader2, BarChart3, CheckCircle, XCircle, Youtube } from 'lucide-react';
+import { Search, Car, X, ArrowLeft, ExternalLink, Loader2, BarChart3, CheckCircle, XCircle, Youtube } from 'lucide-react';
 
-// --- Componente de Logo (SVG) ---
+// --- Componente de Logo ---
 const Logo = () => (
-    <div className="flex items-center justify-center space-x-2">
-        <Car className="h-10 w-10 text-indigo-600 dark:text-indigo-400" />
-        <span className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">BuscaTuCarro IA</span>
+    <div className="flex items-center space-x-2">
+        <Car className="h-8 w-8 text-indigo-500" />
+        <span className="text-2xl font-bold text-white tracking-tight">BuscaTuCarro IA</span>
     </div>
 );
 
-// --- Componente de Chat (Corregido) ---
-const GeminiChat = ({ isChatOpen, setIsChatOpen }) => {
-    const [messages, setMessages] = useState([ { from: 'bot', text: '¡Hola! Soy tu asistente de IA. Dime qué buscas y te ayudaré a encontrar tu carro perfecto.' } ]);
-    const [input, setInput] = useState(''); // CORRECCIÓN 1: Se cambió '=>' por '='
-    const [isLoading, setIsLoading] = useState(false);
-    const chatMessagesRef = useRef(null);
-    useEffect(() => { if (chatMessagesRef.current) { chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight; } }, [messages]);
-    
-    const handleSendMessage = async () => {
-        if (!input.trim() || isLoading) return;
-        const userMessage = { from: 'user', text: input };
-        setMessages(prev => [...prev, userMessage]); 
-        setInput(''); // CORRECCIÓN 2: Se aseguró que setInput se llame correctamente.
-        setIsLoading(true);
-        setTimeout(() => {
-            const botResponse = { from: 'bot', text: `Claro, basándome en tu búsqueda, aquí tienes algunas recomendaciones...` };
-            setMessages(prev => [...prev, botResponse]); 
-            setIsLoading(false);
-        }, 1500);
-    };
-
-    return (
-        <div className={`fixed bottom-4 right-4 transition-all duration-300 ease-in-out z-50 ${isChatOpen ? 'w-11/12 max-w-md h-3/4 max-h-[600px]' : 'w-16 h-16'}`}>
-            {isChatOpen ? (
-                 <div className="flex flex-col w-full h-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700">
-                    <div className="flex justify-between items-center p-4 bg-gray-100 dark:bg-gray-900 rounded-t-2xl"><div className="flex items-center space-x-2"><Bot className="text-indigo-600 dark:text-indigo-400" size={24} /><h3 className="font-bold text-gray-800 dark:text-white">Asistente de Compra IA</h3></div><button onClick={() => setIsChatOpen(false)} className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300"><X size={20} /></button></div>
-                    <div ref={chatMessagesRef} className="flex-1 p-4 overflow-y-auto space-y-4">{messages.map((msg, index) => (<div key={index} className={`flex items-end gap-2 ${msg.from === 'user' ? 'justify-end' : 'justify-start'}`}>{msg.from === 'bot' && <div className="flex-shrink-0 w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center"><Bot size={20} className="text-white"/></div>}<div className={`max-w-xs md:max-w-sm px-4 py-2 rounded-2xl ${msg.from === 'user' ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-bl-none'}`}><p className="text-sm whitespace-pre-wrap">{msg.text}</p></div>{msg.from === 'user' && <div className="flex-shrink-0 w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center"><User size={20} className="text-gray-700"/></div>}</div>))}{isLoading && (<div className="flex justify-start"><div className="flex items-end gap-2"><div className="flex-shrink-0 w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center"><Bot size={20} className="text-white"/></div><div className="max-w-xs md:max-w-sm px-4 py-3 rounded-2xl bg-gray-200 dark:bg-gray-700 rounded-bl-none flex items-center space-x-2"><span className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></span><span className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse delay-75"></span><span className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse delay-150"></span></div></div></div>)}</div>
-                    <div className="p-4 border-t border-gray-200 dark:border-gray-700"><div className="flex items-center bg-gray-100 dark:bg-gray-900 rounded-full"><input type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()} placeholder="Escribe tu consulta aquí..." className="w-full bg-transparent p-3 pl-4 text-sm text-gray-800 dark:text-white focus:outline-none" /><button onClick={handleSendMessage} disabled={isLoading} className="p-2 m-1 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed transition-colors"><Send size={20} /></button></div></div>
-                </div>
-            ) : ( <button onClick={() => setIsChatOpen(true)} className="w-16 h-16 bg-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-indigo-700 transition-all transform hover:scale-110"><MessageSquare size={32} /></button> )}
+// --- Componente de Tarjeta de Miniatura para la Galería ---
+const CarThumbnail = ({ car, onClick }) => (
+    <article 
+        className="relative aspect-square bg-slate-800 rounded-lg overflow-hidden group cursor-pointer shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105"
+        onClick={() => onClick(car)}
+    >
+        <img 
+            src={car.imageUrl} 
+            alt={`${car.make} ${car.model}`}
+            className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-75"
+            onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/400x400/1e293b/ffffff?text=${encodeURIComponent(car.make + ' ' + car.model)}`; }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-100 transition-opacity duration-300"></div>
+        <div className="absolute bottom-0 left-0 p-4">
+            <h3 className="font-bold text-white text-lg leading-tight">{car.make}</h3>
+            <p className="text-sm text-slate-300">{car.model}</p>
         </div>
-    );
-};
-
-// --- Componentes de Resultados (Sin cambios de diseño) ---
-const CarCard = ({ car }) => {
-    const imageUrl = car.imageUrl;
-    return (
-        <div className="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-slate-200 dark:border-slate-700 flex flex-col group">
-            <div className="relative w-full h-56 overflow-hidden"><img className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" src={imageUrl} alt={`${car.make} ${car.model}`} onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/600x400/334155/ffffff?text=${encodeURIComponent(car.make + ' ' + car.model)}`; }}/></div>
-            <div className="p-5 flex-grow flex flex-col">
-                <div><p className="text-sm text-indigo-500 font-semibold">{car.yearRange}</p><h3 className="text-xl font-bold text-slate-900 dark:text-white leading-tight mt-1">{car.make} {car.model}</h3><p className="text-2xl font-black text-indigo-600 dark:text-indigo-400 my-3">{car.priceRange}</p></div>
-                <p className="text-sm text-slate-600 dark:text-slate-300 flex-grow mb-4">{car.description}</p>
-                <div className="mt-auto pt-4 border-t border-slate-200 dark:border-slate-700 space-y-2">
-                    {car.youtubeReviewUrl && (<a href={car.youtubeReviewUrl} target="_blank" rel="noopener noreferrer" className="w-full bg-slate-100 text-slate-800 font-bold py-2.5 px-3 rounded-lg hover:bg-red-500 hover:text-white transition-colors text-sm flex items-center justify-center"><Youtube size={16} className="mr-2"/> Ver Reseñas</a>)}
-                    <div className="grid grid-cols-3 gap-2">{car.purchaseLinks.map(link => (<a key={link.site} href={link.url} target="_blank" rel="noopener noreferrer" className="w-full bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-white font-bold py-2 px-3 rounded-lg hover:bg-indigo-100 dark:hover:bg-slate-600 transition-colors text-xs flex items-center justify-center text-center">{link.site}</a>))}</div>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const SkeletonCard = () => (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-700 animate-pulse">
-        <div className="w-full h-56 bg-slate-300 dark:bg-slate-700"></div>
-        <div className="p-5"><div className="h-4 w-1/4 bg-slate-300 dark:bg-slate-600 rounded mb-2"></div><div className="h-6 w-3/4 bg-slate-300 dark:bg-slate-600 rounded mb-4"></div><div className="h-8 w-1/2 bg-slate-300 dark:bg-slate-600 rounded mb-4"></div><div className="h-4 w-full bg-slate-300 dark:bg-slate-600 rounded mb-1"></div><div className="h-4 w-full bg-slate-300 dark:bg-slate-600 rounded mb-1"></div><div className="h-4 w-2/3 bg-slate-300 dark:bg-slate-600 rounded mb-4"></div><div className="h-10 w-full bg-slate-300 dark:bg-slate-600 rounded mt-6"></div></div>
-    </div>
+    </article>
 );
 
-const ComparisonModal = ({ carsToCompare, onClose }) => {
-    if (!carsToCompare || carsToCompare.length === 0) return null;
+// --- Componente de Vista Detallada (Lightbox) ---
+const CarDetailModal = ({ car, onClose }) => {
+    if (!car) return null;
+
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-70 z-[100] flex justify-center items-center p-4 backdrop-blur-sm">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-7xl max-h-[90vh] flex flex-col">
-                <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center"><h2 className="text-2xl font-bold text-slate-900 dark:text-white">Tabla Comparativa</h2><button onClick={onClose} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700"><X className="text-slate-600 dark:text-slate-300" /></button></div>
-                <div className="overflow-x-auto flex-grow"><table className="w-full min-w-[1000px] text-sm text-left"><thead className="bg-slate-50 dark:bg-slate-900 sticky top-0"><tr><th className="p-4 font-semibold text-slate-700 dark:text-slate-200 w-48">Característica</th>{carsToCompare.map(car => (<th key={car.id} className="p-4 font-semibold text-slate-700 dark:text-slate-200">{car.make} {car.model}</th>))}</tr></thead><tbody className="divide-y divide-slate-200 dark:divide-slate-700"><tr className="bg-white dark:bg-slate-800"><td className="p-4 font-medium text-slate-800 dark:text-slate-300 align-top">Rango de Precios</td>{carsToCompare.map(car => (<td key={car.id} className="p-4 text-lg font-extrabold text-indigo-600 dark:text-indigo-400 align-top">{car.priceRange}</td>))}</tr><tr className="bg-slate-50 dark:bg-slate-800/50"><td className="p-4 font-medium text-slate-800 dark:text-slate-300 align-top">Pros</td>{carsToCompare.map(car => (<td key={car.id} className="p-4 text-slate-600 dark:text-slate-400 align-top"><ul className="space-y-2">{car.pros?.map((pro, i) => (<li key={i} className="flex items-start"><CheckCircle className="w-4 h-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" /><span>{pro}</span></li>))}</ul></td>))}</tr><tr className="bg-white dark:bg-slate-800"><td className="p-4 font-medium text-slate-800 dark:text-slate-300 align-top">Contras</td>{carsToCompare.map(car => (<td key={car.id} className="p-4 text-slate-600 dark:text-slate-400 align-top"><ul className="space-y-2">{car.cons?.map((con, i) => (<li key={i} className="flex items-start"><XCircle className="w-4 h-4 mr-2 mt-0.5 text-red-500 flex-shrink-0" /><span>{con}</span></li>))}</ul></td>))}</tr><tr className="bg-slate-50 dark:bg-slate-800/50"><td className="p-4 font-medium text-slate-800 dark:text-slate-300 align-top">Descripción</td>{carsToCompare.map(car => (<td key={car.id} className="p-4 text-slate-600 dark:text-slate-400 align-top">{car.description}</td>))}</tr></tbody></table></div>
-                <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-b-2xl text-right"><button onClick={onClose} className="bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-indigo-700 transition-colors">Cerrar</button></div>
+        <div className="fixed inset-0 bg-black/80 z-[100] flex justify-center items-center p-4 backdrop-blur-sm animate-fade-in" onClick={onClose}>
+            <div 
+                className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col md:flex-row overflow-hidden"
+                onClick={(e) => e.stopPropagation()} // Evita que el clic dentro del modal lo cierre
+            >
+                <div className="w-full md:w-1/2 h-64 md:h-auto relative">
+                    <img src={car.imageUrl} alt={`${car.make} ${car.model}`} className="absolute top-0 left-0 w-full h-full object-cover" />
+                </div>
+                <div className="w-full md:w-1/2 p-6 flex flex-col overflow-y-auto">
+                    <div>
+                        <p className="text-sm text-indigo-500 font-semibold">{car.yearRange}</p>
+                        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mt-1">{car.make} {car.model}</h2>
+                        <p className="text-3xl font-black text-indigo-600 dark:text-indigo-400 my-3">{car.priceRange}</p>
+                        <p className="text-sm text-slate-600 dark:text-slate-300 mb-4">{car.description}</p>
+                    </div>
+                    
+                    <div className="space-y-4 text-sm my-4">
+                        <div>
+                            <h4 className="font-bold text-slate-900 dark:text-white mb-2">Pros</h4>
+                            <ul className="space-y-1.5">{car.pros?.map((pro, i) => (<li key={i} className="flex items-start text-slate-600 dark:text-slate-300"><CheckCircle className="w-4 h-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" /><span>{pro}</span></li>))}</ul>
+                        </div>
+                         <div>
+                            <h4 className="font-bold text-slate-900 dark:text-white mb-2">Contras</h4>
+                            <ul className="space-y-1.5">{car.cons?.map((con, i) => (<li key={i} className="flex items-start text-slate-600 dark:text-slate-300"><XCircle className="w-4 h-4 mr-2 mt-0.5 text-red-500 flex-shrink-0" /><span>{con}</span></li>))}</ul>
+                        </div>
+                    </div>
+
+                    <div className="mt-auto pt-4 border-t border-slate-200 dark:border-slate-700 space-y-2">
+                         {car.youtubeReviewUrl && (<a href={car.youtubeReviewUrl} target="_blank" rel="noopener noreferrer" className="w-full bg-slate-100 text-slate-800 font-bold py-2.5 px-3 rounded-lg hover:bg-red-500 hover:text-white transition-colors text-sm flex items-center justify-center"><Youtube size={16} className="mr-2"/> Ver Reseñas</a>)}
+                         <div className="grid grid-cols-3 gap-2">{car.purchaseLinks.map(link => (<a key={link.site} href={link.url} target="_blank" rel="noopener noreferrer" className="w-full bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-white font-bold py-2 px-3 rounded-lg hover:bg-indigo-100 dark:hover:bg-slate-600 transition-colors text-xs flex items-center justify-center text-center">{link.site}</a>))}</div>
+                    </div>
+                </div>
             </div>
+             <button onClick={onClose} className="absolute top-4 right-4 p-2 rounded-full bg-white/20 hover:bg-white/30 text-white"><X /></button>
         </div>
     );
 };
 
-// --- Componente Principal con NUEVA LÓGICA DE VISTAS ---
+
+// --- Componente Principal con Diseño Multiverse ---
 function App() {
     const [cars, setCars] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [hasSearched, setHasSearched] = useState(false);
     const [searchInput, setSearchInput] = useState('');
-    const [isChatOpen, setIsChatOpen] = useState(false);
-    const [showComparison, setShowComparison] = useState(false);
+    const [activeCar, setActiveCar] = useState(null); // Para controlar el lightbox
 
     const handleSearch = async (e) => {
         e.preventDefault();
         if (!searchInput.trim()) return;
         setIsLoading(true);
-        setHasSearched(false); // Resetear para mostrar el loader
+        setCars([]);
         try {
             const response = await fetch(`/api/search?q=${encodeURIComponent(searchInput)}`);
             if (!response.ok) { throw new Error(`Error de la API: ${response.statusText}`); }
@@ -105,78 +95,50 @@ function App() {
             setCars([]); 
         } finally {
             setIsLoading(false);
-            setHasSearched(true); // Marcar que la búsqueda terminó
         }
     };
 
-    const handleNewSearch = () => {
-        setHasSearched(false);
-        setCars([]);
-        setSearchInput('');
-    };
-
     return (
-        <div className="bg-slate-100 dark:bg-slate-900 min-h-screen font-sans text-slate-800 dark:text-slate-200 flex flex-col">
-            {showComparison && <ComparisonModal carsToCompare={cars.slice(0, 5)} onClose={() => setShowComparison(false)} />}
+        <div className="bg-slate-900 min-h-screen font-sans text-slate-200">
+            <CarDetailModal car={activeCar} onClose={() => setActiveCar(null)} />
             
-            {/* Si no se ha buscado, muestra la página de inicio */}
-            {!hasSearched && !isLoading && (
-                <div className="flex-grow flex flex-col justify-center items-center text-center px-4">
+            <header className="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-lg border-b border-slate-700">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
                     <Logo />
-                    <p className="text-lg text-slate-600 dark:text-slate-300 max-w-lg mx-auto my-6">
-                        Describe el carro que necesitas en la casilla de búsqueda y te traeremos las mejores 5 opciones que haya disponibles en el mercado.
-                    </p>
-                    <div className="w-full max-w-2xl">
+                    <div className="w-full max-w-md">
                         <form onSubmit={handleSearch} className="relative">
-                            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" size={24} />
-                            <input type="text" name="keyword" placeholder="Ej: 'SUV familiar y segura para viajar'" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} className="w-full pl-14 pr-32 py-4 border border-slate-300 dark:border-slate-600 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:text-white text-lg shadow-lg" />
-                            <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 bg-indigo-600 text-white font-bold px-6 py-2.5 rounded-full hover:bg-indigo-700 transition-colors shadow-md">
-                                Buscar
-                            </button>
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                            <input type="text" name="keyword" placeholder="Describe el carro de tus sueños..." value={searchInput} onChange={(e) => setSearchInput(e.target.value)} className="w-full pl-12 pr-4 py-2.5 border border-slate-600 bg-slate-800 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm" />
                         </form>
                     </div>
                 </div>
-            )}
+            </header>
 
-            {/* Si está cargando, muestra el loader */}
-            {isLoading && (
-                <div className="flex-grow flex flex-col justify-center items-center text-center px-4">
-                    <Loader2 className="w-12 h-12 text-indigo-500 animate-spin" />
-                    <p className="mt-4 text-slate-500">Analizando el mercado para ti...</p>
-                </div>
-            )}
-
-            {/* Si ya buscó, muestra la página de resultados */}
-            {hasSearched && !isLoading && (
-                <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <div className="flex justify-between items-center mb-8">
-                        <button onClick={handleNewSearch} className="flex items-center text-indigo-600 hover:underline">
-                            <ArrowLeft className="mr-2" size={20} />
-                            Nueva Búsqueda
-                        </button>
-                        {cars.length > 1 && (
-                             <button onClick={() => setShowComparison(true)} className="bg-green-500 text-white font-bold py-2 px-4 rounded-full hover:bg-green-600 transition-colors shadow-lg flex items-center justify-center transform hover:scale-105">
-                                <BarChart3 className="mr-2" size={16} />
-                                Comparar
-                            </button>
-                        )}
+            <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {isLoading && (
+                    <div className="flex justify-center items-center h-64">
+                        <Loader2 className="w-12 h-12 text-indigo-500 animate-spin" />
                     </div>
-                    
-                    {cars.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">{cars.map(car => <CarCard key={car.id} car={car} />)}</div>
-                    ) : (
-                        <div className="text-center py-16 bg-white dark:bg-slate-800 rounded-lg shadow-md">
-                            <Car size={48} className="mx-auto text-slate-400" />
-                            <h3 className="mt-2 text-xl font-semibold text-slate-900 dark:text-white">No se encontraron vehículos</h3>
-                            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Intenta con una descripción diferente o usa el chat para más ayuda.</p>
-                        </div>
-                    )}
-                </main>
-            )}
+                )}
 
-            <GeminiChat isChatOpen={isChatOpen} setIsChatOpen={setIsChatOpen} />
+                {!isLoading && cars.length === 0 && (
+                    <div className="text-center py-24">
+                        <h1 className="text-4xl font-bold text-white">Encuentra tu Próximo Vehículo</h1>
+                        <p className="text-lg text-slate-400 mt-4 max-w-xl mx-auto">
+                            Describe el carro que necesitas en la barra de búsqueda superior y te traeremos las mejores opciones del mercado.
+                        </p>
+                    </div>
+                )}
+
+                {!isLoading && cars.length > 0 && (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                        {cars.map(car => <CarThumbnail key={car.id} car={car} onClick={setActiveCar} />)}
+                    </div>
+                )}
+            </main>
+            
             <footer className="w-full text-center p-4 mt-auto">
-                <p className="text-sm text-slate-500 dark:text-slate-400">&copy; {new Date().getFullYear()} BuscaTuCarro IA. Todos los derechos reservados.</p>
+                <p className="text-sm text-slate-500">&copy; {new Date().getFullYear()} BuscaTuCarro IA. Todos los derechos reservados.</p>
             </footer>
         </div>
     );
