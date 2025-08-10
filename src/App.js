@@ -21,15 +21,15 @@ const ComparisonTable = ({ cars }) => {
     ];
 
     return (
-        <div className="w-full overflow-x-auto">
-            <table className="min-w-full border-collapse">
+        <div className="w-full overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-lg">
+            {/* CORRECCIÓN: Se añade la clase 'table-fixed' para forzar el ancho de las columnas */}
+            <table className="min-w-full border-collapse table-fixed">
                 <thead>
                     <tr className="bg-slate-50 dark:bg-slate-800">
                         <th className="sticky left-0 bg-slate-50 dark:bg-slate-800 p-4 font-semibold text-slate-700 dark:text-slate-200 w-48 text-left">Vehículo</th>
                         {cars.map(car => (
-                            <th key={car.id} className="p-4 font-semibold text-slate-700 dark:text-slate-200 border-l border-slate-200 dark:border-slate-700 w-48">
+                            <th key={car.id} className="p-4 font-semibold text-slate-700 dark:text-slate-200 border-l border-slate-200 dark:border-slate-700 w-52">
                                 <div className="flex flex-col items-center text-center">
-                                    {/* CORRECCIÓN: Contenedor con tamaño fijo para la imagen */}
                                     <div className="w-40 h-24 rounded-md mb-2 overflow-hidden relative bg-slate-200 dark:bg-slate-700">
                                         <img 
                                             src={car.imageUrl} 
