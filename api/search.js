@@ -1,13 +1,8 @@
-// Este es el código real para /api/search.js
-
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// Inicializa el cliente de la IA con la API Key que guardaste en Vercel.
-// process.env.GEMINI_API_KEY accede a esa variable de entorno de forma segura.
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export default async function handler(request, response) {
-  // 1. Obtener la búsqueda del usuario desde la URL
   const userQuery = request.query.q;
 
   if (!userQuery) {
@@ -17,8 +12,7 @@ export default async function handler(request, response) {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
 
-    // 2. Crear el prompt para la IA. Le pedimos que actúe como un experto
-    // y que nos devuelva una respuesta en formato JSON estructurado.
+    // Prompt mejorado: Ahora pedimos pros y contras.
     const prompt = `
       Actúa como un experto asesor de autos en Colombia. Un usuario busca lo siguiente: "${userQuery}".
       Recomiéndale entre 3 y 5 vehículos que se ajusten a su búsqueda.
@@ -28,7 +22,9 @@ export default async function handler(request, response) {
       - Un rango de años relevante (yearRange)
       - Un rango de precios estimado en pesos colombianos (priceRange), formato "$XXXM - $XXXM"
       - Una descripción corta y atractiva (description)
-      - Una idea para una imagen representativa (imagePrompt)
+      - Una idea para una imagen representativa (imagePrompt), por ejemplo: "Mazda 3 2023 sedán color rojo en una carretera"
+      - Una lista de 3 a 4 "pros" (ventajas principales)
+      - Una lista de 3 a 4 "cons" (desventajas o puntos a considerar)
       
       IMPORTANTE: Devuelve SÓLO un array de objetos JSON válido, sin ningún texto adicional antes o después.
       La estructura de cada objeto debe ser:
@@ -38,42 +34,53 @@ export default async function handler(request, response) {
         "yearRange": "string",
         "priceRange": "string",
         "description": "string",
-        "imagePrompt": "string"
+        "imagePrompt": "string",
+        "pros": ["string", "string"],
+        "cons": ["string", "string"]
       }
     `;
 
-    // 3. Llamar a la IA y obtener la respuesta
     const result = await model.generateContent(prompt);
     const aiResponse = await result.response;
     const text = aiResponse.text();
 
-    // 4. Limpiar y parsear la respuesta de la IA para convertirla en un objeto JSON real
-    // A veces la IA devuelve el JSON dentro de un bloque de código markdown, lo limpiamos.
     const cleanedText = text.replace('```json', '').replace('```', '').trim();
     const carResults = JSON.parse(cleanedText);
 
-    // 5. Añadir los links de compra a cada resultado.
-    const finalResults = carResults.map((car, index) => ({
-        ...car,
-        id: index + 1, // Añadimos un id único
-        purchaseLinks: [
-            { 
-                site: "TuCarro", 
-                url: `https://carros.tucarro.com.co/${car.make.toLowerCase()}/${car.model.toLowerCase().replace(/ /g, '-')}` 
-            },
-            { 
-                site: "Mercado Libre", 
-                url: `https://listado.mercadolibre.com.co/${car.make.toLowerCase()}-${car.model.toLowerCase().replace(/ /g, '-')}`
-            }
-        ]
-    }));
+    // Lógica mejorada: Ahora añadimos más sitios de compra.
+    const finalResults = carResults.map((car, index) => {
+        const make_lower = car.make.toLowerCase();
+        const model_lower_slug = car.model.toLowerCase().replace(/ /g, '-');
+        const model_lower_plus = car.model.toLowerCase().replace(/ /g, '+');
 
-    // 6. Enviar los resultados finales al frontend
+        return {
+            ...car,
+            id: index + 1,
+            purchaseLinks: [
+                { 
+                    site: "TuCarro", 
+                    url: `https://carros.tucarro.com.co/${make_lower}/${model_lower_slug}` 
+                },
+                { 
+                    site: "Mercado Libre", 
+                    url: `https://listado.mercadolibre.com.co/${make_lower}-${model_lower_slug}`
+                },
+                {
+                    site: "OLX",
+                    url: `https://www.olx.com.co/items/q-${make_lower}-${model_lower_plus}`
+                },
+                 {
+                    site: "Carroya",
+                    url: `https://www.carroya.com/buscar/vehiculos/${make_lower}/${model_lower_slug}`
+                }
+            ]
+        }
+    });
+
     return response.status(200).json(finalResults);
 
   } catch (error) {
     console.error("Error en la función serverless:", error);
-    // Si algo falla (ej. la respuesta de la IA no es JSON válido), enviamos un error.
     return response.status(500).json({ error: 'Ocurrió un error al procesar la búsqueda con la IA.' });
   }
 }
