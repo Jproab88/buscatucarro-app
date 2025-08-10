@@ -63,6 +63,7 @@ const CarDetailModal = ({ car, onClose }) => {
 
                     <div className="mt-auto pt-4 border-t border-slate-200 dark:border-slate-700 space-y-2">
                          {car.youtubeReviewUrl && (<a href={car.youtubeReviewUrl} target="_blank" rel="noopener noreferrer" className="w-full bg-slate-100 text-slate-800 font-bold py-2.5 px-3 rounded-lg hover:bg-red-500 hover:text-white transition-colors text-sm flex items-center justify-center"><Youtube size={16} className="mr-2"/> Ver Reseñas</a>)}
+                         <h4 className="text-sm font-bold text-slate-900 dark:text-white pt-2">Ver ofertas en:</h4>
                          <div className="grid grid-cols-3 gap-2">{car.purchaseLinks.map(link => (<a key={link.site} href={link.url} target="_blank" rel="noopener noreferrer" className="w-full bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-white font-bold py-2 px-3 rounded-lg hover:bg-indigo-100 dark:hover:bg-slate-600 transition-colors text-xs flex items-center justify-center text-center">{link.site}</a>))}</div>
                     </div>
                 </div>
@@ -144,4 +145,4 @@ function App() {
     );
 }
 
-export default App;
+export default App
