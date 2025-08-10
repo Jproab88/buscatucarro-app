@@ -1,112 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Car, MessageSquare, X, Send, Bot, User, Star, ExternalLink, Loader2, BarChart3 } from 'lucide-react';
 
-// --- SIMULACIÓN DE API DE IA (ACTUALIZADA CON MÁS DATOS) ---
-// En una aplicación real, esta función haría una llamada a la API de Gemini.
-const fetchCarRecommendations = async (prompt) => {
-    console.log("Generando prompt para la IA:", prompt);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    const keyword = prompt.toLowerCase();
-    if (keyword.includes("suv") || keyword.includes("camioneta") || keyword.includes("familiar")) {
-        return [
-            {
-                id: 1,
-                make: "Toyota",
-                model: "RAV4 XLE Híbrida",
-                yearRange: "2021 - 2023",
-                priceRange: "$130M - $160M",
-                description: "La reina de la confiabilidad. Su sistema híbrido ofrece un consumo excepcional, ideal para la ciudad y la carretera. Es espaciosa, segura y tiene un excelente valor de reventa.",
-                imagePrompt: "Toyota RAV4 Híbrida 2022 color blanco perlado",
-                purchaseLinks: [
-                    { site: "TuCarro", url: "https://carros.tucarro.com.co/toyota/rav4/" },
-                    { site: "Mercado Libre", url: "https://listado.mercadolibre.com.co/toyota-rav4" }
-                ]
-            },
-            {
-                id: 2,
-                make: "Mazda",
-                model: "CX-5 Grand Touring",
-                yearRange: "2021 - 2023",
-                priceRange: "$125M - $155M",
-                description: "Combina un diseño premium, acabados de lujo y una experiencia de manejo deportiva. Es perfecta si valoras la estética y la calidad de los materiales sin sacrificar la funcionalidad familiar.",
-                imagePrompt: "Mazda CX-5 Grand Touring 2023 color rojo diamante",
-                purchaseLinks: [
-                    { site: "TuCarro", url: "https://carros.tucarro.com.co/mazda/cx-5/" },
-                    { site: "Mercado Libre", url: "https://listado.mercadolibre.com.co/mazda-cx-5" }
-                ]
-            },
-            {
-                id: 3,
-                make: "Kia",
-                model: "Sportage Zenith",
-                yearRange: "2023 - 2024",
-                priceRange: "$140M - $170M",
-                description: "Con un diseño futurista y un interior cargado de tecnología, la nueva Sportage es una de las más llamativas. Ofrece un gran espacio, comodidad y una de las mejores garantías.",
-                imagePrompt: "Kia Sportage 2024 color azul oscuro en una ciudad de noche",
-                purchaseLinks: [
-                    { site: "TuCarro", url: "https://carros.tucarro.com.co/kia/sportage/" },
-                    { site: "Mercado Libre", url: "https://listado.mercadolibre.com.co/kia-sportage" }
-                ]
-            },
-            {
-                id: 6,
-                make: "Renault",
-                model: "Duster Intens",
-                yearRange: "2022 - 2024",
-                priceRange: "$75M - $95M",
-                description: "Una opción robusta y muy práctica, conocida por su excelente relación precio/beneficio y su suspensión preparada para las vías de Colombia. Ideal para quienes buscan durabilidad y bajo costo.",
-                imagePrompt: "Renault Duster 2023 color gris",
-                purchaseLinks: [
-                    { site: "TuCarro", url: "https://carros.tucarro.com.co/renault/duster/" },
-                    { site: "Mercado Libre", url: "https://listado.mercadolibre.com.co/renault-duster" }
-                ]
-            },
-            {
-                id: 7,
-                make: "Chevrolet",
-                model: "Tracker Turbo RS",
-                yearRange: "2023 - 2024",
-                priceRange: "$90M - $110M",
-                description: "Ofrece un buen nivel de equipamiento en seguridad y conectividad, con un motor turbo eficiente para la ciudad. Su versión RS añade un look más deportivo y atractivo.",
-                imagePrompt: "Chevrolet Tracker RS 2024 color rojo",
-                purchaseLinks: [
-                    { site: "TuCarro", url: "https://carros.tucarro.com.co/chevrolet/tracker/" },
-                    { site: "Mercado Libre", url: "https://listado.mercadolibre.com.co/chevrolet-tracker" }
-                ]
-            }
-        ];
-    } else {
-         return [
-            {
-                id: 4,
-                make: "Mazda",
-                model: "3 Grand Touring",
-                yearRange: "2022 - 2024",
-                priceRange: "$85M - $110M",
-                description: "Un sedán con diseño y manejo excepcionales. Sus acabados interiores son de alta gama y su equipamiento en seguridad y tecnología es de los mejores en su categoría.",
-                imagePrompt: "Mazda 3 Grand Touring 2023 sedán color gris máquina",
-                purchaseLinks: [
-                    { site: "TuCarro", url: "https://carros.tucarro.com.co/mazda/mazda-3/" },
-                    { site: "Mercado Libre", url: "https://listado.mercadolibre.com.co/mazda-3" }
-                ]
-            },
-            {
-                id: 5,
-                make: "Chevrolet",
-                model: "Onix Turbo RS",
-                yearRange: "2023 - 2024",
-                priceRange: "$68M - $80M",
-                description: "Un hatchback ágil y muy eficiente gracias a su motor turbo. El diseño RS le da un toque deportivo y viene muy bien equipado en conectividad y seguridad para su precio.",
-                imagePrompt: "Chevrolet Onix RS 2024 color rojo",
-                purchaseLinks: [
-                    { site: "TuCarro", url: "https://carros.tucarro.com.co/chevrolet/onix/" },
-                    { site: "Mercado Libre", url: "https://listado.mercadolibre.com.co/chevrolet-onix" }
-                ]
-            }
-        ];
-    }
-};
+// Esta función ya no se usa, pero la dejamos para que no haya errores si queda alguna referencia.
+const fetchCarRecommendations_DEPRECATED = async (prompt) => { return []; };
 
 const GeminiChat = ({ isChatOpen, setIsChatOpen }) => {
     const [messages, setMessages] = useState([ { from: 'bot', text: '¡Hola! Soy tu asistente de IA. Dime qué buscas y te ayudaré a encontrar tu carro perfecto. Por ejemplo: "Busco un SUV familiar, seguro y económico".' } ]);
@@ -192,15 +88,27 @@ function App() {
     const handleSearch = async (e) => {
         e.preventDefault();
         if (!searchInput.trim()) return;
+
         setIsLoading(true);
         setHasSearched(true);
         setCars([]);
-        // Estas son las dos líneas NUEVAS que debes pegar:
-const response = await fetch(`/api/search?q=${encodeURIComponent(searchInput)}`);
-const results = await response.json();
-
-        setCars(results);
-        setIsLoading(false);
+        
+        try {
+            // ESTA ES LA LLAMADA CORRECTA A LA API REAL
+            const response = await fetch(`/api/search?q=${encodeURIComponent(searchInput)}`);
+            if (!response.ok) {
+                // Si la respuesta no es exitosa (ej. error 500), lanza un error
+                throw new Error(`Error de la API: ${response.statusText}`);
+            }
+            const results = await response.json();
+            setCars(results);
+        } catch (error) {
+            console.error("Error al buscar:", error);
+            // Opcional: podrías mostrar un mensaje de error al usuario aquí
+            setCars([]); // Limpia los resultados si hay un error
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleCompareClick = () => {
