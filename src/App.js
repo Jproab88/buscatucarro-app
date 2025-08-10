@@ -29,12 +29,15 @@ const ComparisonTable = ({ cars }) => {
                         {cars.map(car => (
                             <th key={car.id} className="p-4 font-semibold text-slate-700 dark:text-slate-200 border-l border-slate-200 dark:border-slate-700 w-48">
                                 <div className="flex flex-col items-center text-center">
-                                    <img 
-                                        src={car.imageUrl} 
-                                        alt={`${car.make} ${car.model}`}
-                                        className="w-full h-20 object-cover rounded-md mb-2"
-                                        onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/300x200/334155/ffffff?text=Imagen`; }}
-                                    />
+                                    {/* CORRECCIÓN: Contenedor con tamaño fijo para la imagen */}
+                                    <div className="w-40 h-24 rounded-md mb-2 overflow-hidden relative bg-slate-200 dark:bg-slate-700">
+                                        <img 
+                                            src={car.imageUrl} 
+                                            alt={`${car.make} ${car.model}`}
+                                            className="absolute top-0 left-0 w-full h-full object-cover"
+                                            onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/300x200/334155/ffffff?text=Imagen`; }}
+                                        />
+                                    </div>
                                     <span className="font-bold text-indigo-600 dark:text-indigo-400">{car.make}</span>
                                     <span>{car.model}</span>
                                 </div>
