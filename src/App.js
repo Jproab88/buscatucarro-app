@@ -32,14 +32,14 @@ const GeminiChat = ({ isChatOpen, setIsChatOpen }) => {
     );
 };
 
-// Componente de Tarjeta de Vehículo Mejorado
+// Componente de Tarjeta de Vehículo con IMAGEN CORREGIDA
 const CarCard = ({ car }) => {
-    // Usamos Unsplash para obtener imágenes reales y dinámicas basadas en el prompt de la IA.
-    const imageUrl = `https://source.unsplash.com/600x400/?${encodeURIComponent(car.imagePrompt)}`;
+    // CORRECCIÓN: Volvemos a un placeholder confiable pero con mejor diseño.
+    const imageUrl = `https://placehold.co/600x400/1e293b/ffffff?text=${encodeURIComponent(car.make + ' ' + car.model)}`;
     return (
         <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700 flex flex-col group">
             <div className="relative">
-                <img className="w-full h-52 object-cover transition-transform duration-300 group-hover:scale-105" src={imageUrl} alt={car.imagePrompt} />
+                <img className="w-full h-52 object-cover transition-transform duration-300 group-hover:scale-105" src={imageUrl} alt={car.model} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 p-4">
                     <h3 className="text-2xl font-bold text-white leading-tight">{car.make} {car.model}</h3>
