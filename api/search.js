@@ -2,11 +2,11 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Búsqueda de imagen mejorada para evitar placeholders.
+// Búsqueda de imagen mejorada para evitar placeholders y fotos incorrectas.
 async function fetchFirstGoogleImage(make, model) {
     console.log(`Buscando imagen para: ${make} ${model}`);
     
-    // 1. Diccionario de imágenes curadas para resultados óptimos.
+    // 1. Diccionario de imágenes curadas para resultados óptimos y de alta calidad.
     const knownImages = {
         "RAV4": "https://images.pexels.com/photos/18437335/pexels-photo-18437335.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
         "CX-5": "https://images.pexels.com/photos/16455239/pexels-photo-16455239.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
@@ -15,7 +15,9 @@ async function fetchFirstGoogleImage(make, model) {
         "Tracker": "https://www.chevrolet.com.co/content/dam/chevrolet/south-america/colombia/espanol/index/pick-up-trucks-and-suvs/2025-tracker-turbo/mov/01-images/2025-tracker-turbo-rs-rojo.jpg?imwidth=960",
         "Mazda 3": "https://images.pexels.com/photos/18841774/pexels-photo-18841774/free-photo-of-a-red-mazda-in-a-dark-garage.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
         "Onix": "https://www.chevrolet.com.co/content/dam/chevrolet/south-america/colombia/espanol/index/cars/2025-onix-turbo-s/colorizer/rojo-escarlata/01-images/onix-rs-rojo-escarlata.jpg?imwidth=960",
-        "Corolla": "https://images.pexels.com/photos/1637859/pexels-photo-1637859.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+        "Corolla": "https://images.pexels.com/photos/1637859/pexels-photo-1637859.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "Kwid": "https://www.larepublica.net/storage/images/2022/10/21/20221021115317.kwid.jpg",
+        "Stepway": "https://www.elcarrocolombiano.com/wp-content/uploads/2021/04/20210426-RENAULT-STEPWAY-2022-COLOMBIA-VERSIONES-PRECIOS-CARACTERISTICAS-01.jpg"
     };
 
     // Buscamos si el modelo contiene alguna de las llaves para devolver una imagen de alta calidad.
@@ -25,9 +27,9 @@ async function fetchFirstGoogleImage(make, model) {
         }
     }
 
-    // 2. Si no está en el diccionario, se realiza una búsqueda dinámica en un servicio de imágenes.
-    // Esto reemplaza el placeholder por un intento de encontrar una foto real.
-    return `https://source.unsplash.com/600x400/?${encodeURIComponent(make + ' ' + model)}`;
+    // 2. Si no está en el diccionario, se usa un placeholder confiable que muestra el nombre del carro.
+    // Esto evita imágenes incorrectas como calabazas o de otros modelos.
+    return `https://placehold.co/600x400/1e293b/ffffff?text=${encodeURIComponent(make + ' ' + model)}`;
 }
 
 
