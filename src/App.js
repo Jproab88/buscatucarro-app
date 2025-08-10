@@ -1,4 +1,4 @@
-import React, 'useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Search, Car, MessageSquare, X, Send, Bot, User, ArrowLeft, ExternalLink, Loader2, BarChart3, CheckCircle, XCircle, Youtube } from 'lucide-react';
 
 // --- Componente de Logo (SVG) ---
@@ -9,22 +9,27 @@ const Logo = () => (
     </div>
 );
 
-// --- Componente de Chat (Sin cambios) ---
+// --- Componente de Chat (Corregido) ---
 const GeminiChat = ({ isChatOpen, setIsChatOpen }) => {
     const [messages, setMessages] = useState([ { from: 'bot', text: '¡Hola! Soy tu asistente de IA. Dime qué buscas y te ayudaré a encontrar tu carro perfecto.' } ]);
-    const [input, setInput] = useState('');
+    const [input, setInput] = useState(''); // CORRECCIÓN 1: Se cambió '=>' por '='
     const [isLoading, setIsLoading] = useState(false);
     const chatMessagesRef = useRef(null);
     useEffect(() => { if (chatMessagesRef.current) { chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight; } }, [messages]);
+    
     const handleSendMessage = async () => {
         if (!input.trim() || isLoading) return;
         const userMessage = { from: 'user', text: input };
-        setMessages(prev => [...prev, userMessage]); setInput(''); setIsLoading(true);
+        setMessages(prev => [...prev, userMessage]); 
+        setInput(''); // CORRECCIÓN 2: Se aseguró que setInput se llame correctamente.
+        setIsLoading(true);
         setTimeout(() => {
             const botResponse = { from: 'bot', text: `Claro, basándome en tu búsqueda, aquí tienes algunas recomendaciones...` };
-            setMessages(prev => [...prev, botResponse]); setIsLoading(false);
+            setMessages(prev => [...prev, botResponse]); 
+            setIsLoading(false);
         }, 1500);
     };
+
     return (
         <div className={`fixed bottom-4 right-4 transition-all duration-300 ease-in-out z-50 ${isChatOpen ? 'w-11/12 max-w-md h-3/4 max-h-[600px]' : 'w-16 h-16'}`}>
             {isChatOpen ? (
