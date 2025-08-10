@@ -195,7 +195,10 @@ function App() {
         setIsLoading(true);
         setHasSearched(true);
         setCars([]);
-        const results = await fetchCarRecommendations(searchInput);
+        // Estas son las dos líneas NUEVAS que debes pegar:
+const response = await fetch(`/api/search?q=${encodeURIComponent(searchInput)}`);
+const results = await response.json();
+
         setCars(results);
         setIsLoading(false);
     };
