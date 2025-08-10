@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Car, Loader2, CheckCircle, XCircle, ExternalLink, Shield, Zap, Gauge, Wind } from 'lucide-react';
+import { Search, Car, Loader2, CheckCircle, XCircle, ExternalLink, Shield, Zap, Gauge, Wind, ArrowLeft } from 'lucide-react';
 
 // --- Componente de Logo ---
 const Logo = () => (
@@ -22,7 +22,8 @@ const ComparisonGrid = ({ cars }) => {
 
     return (
         <div className="w-full overflow-x-auto">
-            <div className="inline-grid grid-cols-[12rem_repeat(5,_minmax(14rem,_1fr))] gap-px bg-slate-200 dark:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
+            {/* CORRECCIÓN CLAVE: Se elimina 'minmax' para que las columnas tengan un ancho fijo de 14rem */}
+            <div className="grid grid-cols-[12rem_repeat(5,_14rem)] gap-px bg-slate-200 dark:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
                 {/* --- Fila de Encabezado --- */}
                 <div className="sticky left-0 bg-slate-50 dark:bg-slate-800 p-4 font-semibold text-slate-700 dark:text-slate-200 text-left flex items-center">Vehículo</div>
                 {cars.map(car => (
@@ -108,6 +109,12 @@ function App() {
         }
     };
 
+    const handleNewSearch = () => {
+        setHasSearched(false);
+        setCars([]);
+        setSearchInput('');
+    };
+
     return (
         <div className="bg-slate-100 dark:bg-slate-900 min-h-screen font-sans text-slate-800 dark:text-slate-200 flex flex-col">
             {!hasSearched && !isLoading && (
@@ -137,7 +144,14 @@ function App() {
 
             {hasSearched && !isLoading && (
                 <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 text-center">Aquí tienes tu comparativa:</h2>
+                    <div className="flex justify-between items-center mb-6">
+                        <button onClick={handleNewSearch} className="flex items-center text-indigo-600 hover:underline font-semibold">
+                            <ArrowLeft className="mr-2" size={20} />
+                            Nueva Búsqueda
+                        </button>
+                        <h2 className="text-3xl font-bold text-slate-900 dark:text-white text-center">Aquí tienes tu comparativa:</h2>
+                        <div className="w-40"></div> {/* Espaciador para centrar el título */}
+                    </div>
                     {cars.length > 0 ? (
                         <ComparisonGrid cars={cars} />
                     ) : (
