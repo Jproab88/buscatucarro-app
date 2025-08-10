@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Car, MessageSquare, X, Send, Bot, User, Star, ExternalLink, Loader2, BarChart3, CheckCircle, XCircle } from 'lucide-react';
-
-// Esta función ya no se usa.
-const fetchCarRecommendations_DEPRECATED = async (prompt) => { return []; };
+import { Search, Car, MessageSquare, X, Send, Bot, User, Star, ExternalLink, Loader2, BarChart3, CheckCircle, XCircle, Youtube } from 'lucide-react';
 
 const GeminiChat = ({ isChatOpen, setIsChatOpen }) => {
     const [messages, setMessages] = useState([ { from: 'bot', text: '¡Hola! Soy tu asistente de IA. Dime qué buscas y te ayudaré a encontrar tu carro perfecto. Por ejemplo: "Busco un SUV familiar, seguro y económico".' } ]);
@@ -32,10 +29,9 @@ const GeminiChat = ({ isChatOpen, setIsChatOpen }) => {
     );
 };
 
-// Componente de Tarjeta de Vehículo con IMAGEN CORREGIDA
 const CarCard = ({ car }) => {
-    // CORRECCIÓN: Volvemos a un placeholder confiable pero con mejor diseño.
-    const imageUrl = `https://placehold.co/600x400/1e293b/ffffff?text=${encodeURIComponent(car.make + ' ' + car.model)}`;
+    // Usamos la URL de la imagen que ahora viene de la API.
+    const imageUrl = car.imageUrl;
     return (
         <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700 flex flex-col group">
             <div className="relative">
@@ -50,11 +46,22 @@ const CarCard = ({ car }) => {
                 <p className="text-2xl font-extrabold text-blue-600 dark:text-blue-400 mb-3">{car.priceRange}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300 flex-grow mb-4">{car.description}</p>
                 <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
+                    {/* Nuevo botón de YouTube que solo aparece si existe la URL */}
+                    {car.youtubeReviewUrl && (
+                        <a 
+                            href={car.youtubeReviewUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="w-full bg-red-600 text-white font-bold py-2.5 px-3 rounded-lg hover:bg-red-700 transition-colors text-sm flex items-center justify-center mb-3"
+                        >
+                            <Youtube size={16} className="mr-2"/> Ver Reseñas en YouTube
+                        </a>
+                    )}
                     <h4 className="text-sm font-bold mb-2 text-gray-800 dark:text-white">Ver ofertas en:</h4>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-3 gap-2">
                         {car.purchaseLinks.map(link => (
-                            <a key={link.site} href={link.url} target="_blank" rel="noopener noreferrer" className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white font-bold py-2 px-3 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-600 transition-colors text-sm flex items-center justify-center">
-                                {link.site} <ExternalLink size={14} className="ml-1.5"/>
+                            <a key={link.site} href={link.url} target="_blank" rel="noopener noreferrer" className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white font-bold py-2 px-3 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-600 transition-colors text-xs flex items-center justify-center text-center">
+                                {link.site}
                             </a>
                         ))}
                     </div>
@@ -71,7 +78,6 @@ const SkeletonCard = () => (
     </div>
 );
 
-// Modal de Comparación Mejorado con Pros y Contras
 const ComparisonModal = ({ carsToCompare, onClose }) => {
     if (!carsToCompare || carsToCompare.length === 0) return null;
 
