@@ -9,8 +9,8 @@ const Logo = () => (
     </div>
 );
 
-// --- Componente de la Tabla Comparativa ---
-const ComparisonTable = ({ cars }) => {
+// --- NUEVO Componente de Comparación usando CSS Grid ---
+const ComparisonGrid = ({ cars }) => {
     const features = [
         { key: 'pros', label: 'Pros', icon: CheckCircle, color: 'text-green-500' },
         { key: 'cons', label: 'Contras', icon: XCircle, color: 'text-red-500' },
@@ -21,69 +21,63 @@ const ComparisonTable = ({ cars }) => {
     ];
 
     return (
-        <div className="w-full overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-lg">
-            {/* CORRECCIÓN: Se añade la clase 'table-fixed' para forzar el ancho de las columnas */}
-            <table className="min-w-full border-collapse table-fixed">
-                <thead>
-                    <tr className="bg-slate-50 dark:bg-slate-800">
-                        <th className="sticky left-0 bg-slate-50 dark:bg-slate-800 p-4 font-semibold text-slate-700 dark:text-slate-200 w-48 text-left">Vehículo</th>
+        <div className="w-full overflow-x-auto">
+            <div className="inline-grid grid-cols-[12rem_repeat(5,_minmax(14rem,_1fr))] gap-px bg-slate-200 dark:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
+                {/* --- Fila de Encabezado --- */}
+                <div className="sticky left-0 bg-slate-50 dark:bg-slate-800 p-4 font-semibold text-slate-700 dark:text-slate-200 text-left flex items-center">Vehículo</div>
+                {cars.map(car => (
+                    <div key={car.id} className="bg-slate-50 dark:bg-slate-800 p-4 font-semibold text-slate-700 dark:text-slate-200">
+                        <div className="flex flex-col items-center text-center">
+                            <div className="w-full h-24 rounded-md mb-2 overflow-hidden relative bg-slate-200 dark:bg-slate-700">
+                                <img 
+                                    src={car.imageUrl} 
+                                    alt={`${car.make} ${car.model}`}
+                                    className="absolute top-0 left-0 w-full h-full object-cover"
+                                    onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/300x200/334155/ffffff?text=Imagen`; }}
+                                />
+                            </div>
+                            <span className="font-bold text-indigo-600 dark:text-indigo-400">{car.make}</span>
+                            <span className="text-sm">{car.model}</span>
+                        </div>
+                    </div>
+                ))}
+
+                {/* --- Filas de Características --- */}
+                {features.map(feature => (
+                    <React.Fragment key={feature.key}>
+                        <div className="sticky left-0 bg-white dark:bg-slate-800/50 p-4 font-medium text-slate-800 dark:text-slate-300 flex items-start">
+                            <feature.icon className={`w-5 h-5 mr-2 mt-0.5 ${feature.color} flex-shrink-0`} />
+                            {feature.label}
+                        </div>
                         {cars.map(car => (
-                            <th key={car.id} className="p-4 font-semibold text-slate-700 dark:text-slate-200 border-l border-slate-200 dark:border-slate-700 w-52">
-                                <div className="flex flex-col items-center text-center">
-                                    <div className="w-40 h-24 rounded-md mb-2 overflow-hidden relative bg-slate-200 dark:bg-slate-700">
-                                        <img 
-                                            src={car.imageUrl} 
-                                            alt={`${car.make} ${car.model}`}
-                                            className="absolute top-0 left-0 w-full h-full object-cover"
-                                            onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/300x200/334155/ffffff?text=Imagen`; }}
-                                        />
-                                    </div>
-                                    <span className="font-bold text-indigo-600 dark:text-indigo-400">{car.make}</span>
-                                    <span>{car.model}</span>
-                                </div>
-                            </th>
+                            <div key={car.id} className="bg-white dark:bg-slate-800/50 p-4 text-slate-600 dark:text-slate-400 text-sm">
+                                {Array.isArray(car[feature.key]) ? (
+                                    <ul className="space-y-1.5">
+                                        {car[feature.key].map((item, i) => <li key={i}>{item}</li>)}
+                                    </ul>
+                                ) : (
+                                    <span>{car[feature.key]}</span>
+                                )}
+                            </div>
                         ))}
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-                    {features.map(feature => (
-                        <tr key={feature.key} className="bg-white dark:bg-slate-800/50">
-                            <td className="sticky left-0 bg-white dark:bg-slate-800/50 p-4 font-medium text-slate-800 dark:text-slate-300 align-top">
-                                <div className="flex items-center">
-                                    <feature.icon className={`w-5 h-5 mr-2 ${feature.color}`} />
-                                    {feature.label}
-                                </div>
-                            </td>
-                            {cars.map(car => (
-                                <td key={car.id} className="p-4 text-slate-600 dark:text-slate-400 align-top border-l border-slate-200 dark:border-slate-700">
-                                    {Array.isArray(car[feature.key]) ? (
-                                        <ul className="space-y-1.5">
-                                            {car[feature.key].map((item, i) => <li key={i}>{item}</li>)}
-                                        </ul>
-                                    ) : (
-                                        <span>{car[feature.key]}</span>
-                                    )}
-                                </td>
-                            ))}
-                        </tr>
-                    ))}
-                    <tr className="bg-white dark:bg-slate-800/50">
-                        <td className="sticky left-0 bg-white dark:bg-slate-800/50 p-4 font-medium text-slate-800 dark:text-slate-300 align-top">Comprar</td>
-                        {cars.map(car => (
-                            <td key={car.id} className="p-4 align-top border-l border-slate-200 dark:border-slate-700">
-                                <a 
-                                    href={car.mercadoLibreUrl} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer" 
-                                    className="w-full bg-yellow-400 text-slate-900 font-bold py-2 px-3 rounded-lg hover:bg-yellow-500 transition-colors text-sm flex items-center justify-center"
-                                >
-                                    Mercado Libre <ExternalLink size={14} className="ml-1.5"/>
-                                </a>
-                            </td>
-                        ))}
-                    </tr>
-                </tbody>
-            </table>
+                    </React.Fragment>
+                ))}
+
+                {/* --- Fila de Compra --- */}
+                <div className="sticky left-0 bg-white dark:bg-slate-800/50 p-4 font-medium text-slate-800 dark:text-slate-300 flex items-center">Comprar</div>
+                {cars.map(car => (
+                    <div key={car.id} className="bg-white dark:bg-slate-800/50 p-4">
+                        <a 
+                            href={car.mercadoLibreUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="w-full bg-yellow-400 text-slate-900 font-bold py-2 px-3 rounded-lg hover:bg-yellow-500 transition-colors text-sm flex items-center justify-center"
+                        >
+                            Mercado Libre <ExternalLink size={14} className="ml-1.5"/>
+                        </a>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };
@@ -116,7 +110,6 @@ function App() {
 
     return (
         <div className="bg-slate-100 dark:bg-slate-900 min-h-screen font-sans text-slate-800 dark:text-slate-200 flex flex-col">
-            {/* Si no se ha buscado, muestra la página de inicio */}
             {!hasSearched && !isLoading && (
                 <div className="flex-grow flex flex-col justify-center items-center text-center px-4">
                     <Logo />
@@ -135,7 +128,6 @@ function App() {
                 </div>
             )}
 
-            {/* Si está cargando, muestra el loader */}
             {isLoading && (
                 <div className="flex-grow flex flex-col justify-center items-center text-center px-4">
                     <Loader2 className="w-12 h-12 text-indigo-500 animate-spin" />
@@ -143,12 +135,11 @@ function App() {
                 </div>
             )}
 
-            {/* Si ya buscó, muestra la página de resultados */}
             {hasSearched && !isLoading && (
                 <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 text-center">Aquí tienes tu comparativa:</h2>
                     {cars.length > 0 ? (
-                        <ComparisonTable cars={cars} />
+                        <ComparisonGrid cars={cars} />
                     ) : (
                         <div className="text-center py-16 bg-white dark:bg-slate-800 rounded-lg shadow-md">
                             <Car size={48} className="mx-auto text-slate-400" />
