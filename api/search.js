@@ -2,33 +2,33 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Búsqueda de imagen mejorada para evitar placeholders y fotos incorrectas.
+// Función para buscar la primera imagen en Google usando la API de Custom Search.
 async function fetchFirstGoogleImage(make, model) {
-    console.log(`Buscando imagen para: ${make} ${model}`);
+    console.log(`Buscando imagen real en Google para: ${make} ${model}`);
     
-    // 1. Diccionario de imágenes curadas para resultados óptimos y de alta calidad.
-    const knownImages = {
-        "RAV4": "https://images.pexels.com/photos/18437335/pexels-photo-18437335.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        "CX-5": "https://images.pexels.com/photos/16455239/pexels-photo-16455239.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        "Sportage": "https://images.pexels.com/photos/14093952/pexels-photo-14093952.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        "Duster": "https://images.pexels.com/photos/15982132/pexels-photo-15982132/free-photo-of-dacia-duster-suv-in-a-forest.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        "Tracker": "https://www.chevrolet.com.co/content/dam/chevrolet/south-america/colombia/espanol/index/pick-up-trucks-and-suvs/2025-tracker-turbo/mov/01-images/2025-tracker-turbo-rs-rojo.jpg?imwidth=960",
-        "Mazda 3": "https://images.pexels.com/photos/18841774/pexels-photo-18841774/free-photo-of-a-red-mazda-in-a-dark-garage.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        "Onix": "https://www.chevrolet.com.co/content/dam/chevrolet/south-america/colombia/espanol/index/cars/2025-onix-turbo-s/colorizer/rojo-escarlata/01-images/onix-rs-rojo-escarlata.jpg?imwidth=960",
-        "Corolla": "https://images.pexels.com/photos/1637859/pexels-photo-1637859.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        "Kwid": "https://www.larepublica.net/storage/images/2022/10/21/20221021115317.kwid.jpg",
-        "Stepway": "https://www.elcarrocolombiano.com/wp-content/uploads/2021/04/20210426-RENAULT-STEPWAY-2022-COLOMBIA-VERSIONES-PRECIOS-CARACTERISTICAS-01.jpg"
-    };
+    const apiKey = process.env.GOOGLE_SEARCH_API_KEY;
+    const searchEngineId = process.env.GOOGLE_SEARCH_ENGINE_ID;
+    const query = `${make} ${model} photo`;
 
-    // Buscamos si el modelo contiene alguna de las llaves para devolver una imagen de alta calidad.
-    for (const key in knownImages) {
-        if (model.toLowerCase().includes(key.toLowerCase())) {
-            return knownImages[key];
+    // Construimos la URL para la API de Google Custom Search
+    const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${searchEngineId}&q=${encodeURIComponent(query)}&searchType=image&num=1`;
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Error en la API de Google Search: ${response.status}`);
         }
+        const data = await response.json();
+
+        // Si la búsqueda tiene resultados y el primer resultado tiene un link, lo usamos.
+        if (data.items && data.items.length > 0 && data.items[0].link) {
+            return data.items[0].link;
+        }
+    } catch (error) {
+        console.error("Error al buscar imagen en Google:", error);
     }
 
-    // 2. Si no está en el diccionario, se usa un placeholder confiable que muestra el nombre del carro.
-    // Esto evita imágenes incorrectas como calabazas o de otros modelos.
+    // Si todo lo demás falla, usamos un placeholder confiable para no romper la página.
     return `https://placehold.co/600x400/1e293b/ffffff?text=${encodeURIComponent(make + ' ' + model)}`;
 }
 
@@ -78,7 +78,6 @@ export default async function handler(request, response) {
     const carResults = JSON.parse(cleanedText);
 
     const finalResults = await Promise.all(carResults.map(async (car, index) => {
-        // Obtenemos la URL de la imagen para cada carro.
         const imageUrl = await fetchFirstGoogleImage(car.make, car.model);
         
         const make_lower = car.make.toLowerCase();
