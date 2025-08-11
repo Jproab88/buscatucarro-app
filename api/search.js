@@ -2,28 +2,40 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
+// Función para buscar la primera imagen en Google usando la API de Custom Search.
 async function fetchFirstGoogleImage(make, model) {
     console.log(`Buscando imagen real en Google para: ${make} ${model}`);
+    
     const apiKey = process.env.GOOGLE_SEARCH_API_KEY;
     const searchEngineId = process.env.GOOGLE_SEARCH_ENGINE_ID;
     const query = `${make} ${model} photo`;
-    const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${searchEngineId}&q=${encodeURIComponent(query)}&searchType=image&num=1`;
+
+    // CORRECCIÓN DEFINITIVA: Se añade el parámetro &imgSize=medium para solicitar imágenes de tamaño mediano.
+    const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${searchEngineId}&q=${encodeURIComponent(query)}&searchType=image&num=1&imgSize=medium`;
 
     try {
         const response = await fetch(url);
-        if (!response.ok) { throw new Error(`Error en la API de Google Search: ${response.status}`); }
+        if (!response.ok) {
+            throw new Error(`Error en la API de Google Search: ${response.status}`);
+        }
         const data = await response.json();
+
+        // Si la búsqueda tiene resultados y el primer resultado tiene un link, lo usamos.
         if (data.items && data.items.length > 0 && data.items[0].link) {
             return data.items[0].link;
         }
     } catch (error) {
         console.error("Error al buscar imagen en Google:", error);
     }
+
+    // Si todo lo demás falla, usamos un placeholder confiable para no romper la página.
     return `https://placehold.co/600x400/1e293b/ffffff?text=${encodeURIComponent(make + ' ' + model)}`;
 }
 
+
 export default async function handler(request, response) {
   const userQuery = request.query.q;
+
   if (!userQuery) {
     return response.status(400).json({ error: 'No se proporcionó una búsqueda.' });
   }
@@ -31,7 +43,6 @@ export default async function handler(request, response) {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
 
-    // Prompt mejorado: Ahora pedimos las características técnicas.
     const prompt = `
       Actúa como un experto asesor de autos en Colombia. Un usuario busca lo siguiente: "${userQuery}".
       Recomiéndale los 5 mejores vehículos que se ajusten a su búsqueda.
@@ -68,6 +79,7 @@ export default async function handler(request, response) {
 
     const finalResults = await Promise.all(carResults.map(async (car, index) => {
         const imageUrl = await fetchFirstGoogleImage(car.make, car.model);
+        
         const make_lower = car.make.toLowerCase();
         const model_lower_slug = car.model.toLowerCase().replace(/ /g, '-');
 
