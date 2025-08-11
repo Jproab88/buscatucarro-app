@@ -9,7 +9,7 @@ const Logo = () => (
     </div>
 );
 
-// --- NUEVO Componente de Comparación usando CSS Grid ---
+// --- Componente de Comparación usando CSS Grid ---
 const ComparisonGrid = ({ cars }) => {
     const features = [
         { key: 'pros', label: 'Pros', icon: CheckCircle, color: 'text-green-500' },
@@ -22,12 +22,11 @@ const ComparisonGrid = ({ cars }) => {
 
     return (
         <div className="w-full overflow-x-auto">
-            {/* CORRECCIÓN CLAVE: Se usa 'grid' en lugar de 'inline-grid' para asegurar el comportamiento de bloque */}
-            <div className="grid grid-cols-[12rem_repeat(5,_minmax(14rem,_1fr))] gap-px bg-slate-200 dark:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
+            <div className="grid grid-cols-[12rem_repeat(5,_14rem)] gap-px bg-slate-200 dark:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
                 {/* --- Fila de Encabezado --- */}
                 <div className="sticky left-0 bg-slate-50 dark:bg-slate-800 p-4 font-semibold text-slate-700 dark:text-slate-200 text-left flex items-center">Vehículo</div>
                 {cars.map(car => (
-                    <div key={car.id} className="bg-slate-50 dark:bg-slate-800 p-4 font-semibold text-slate-700 dark:text-slate-200">
+                    <div key={car.id} className="bg-slate-50 dark:bg-slate-800 p-4 font-semibold text-slate-700 dark:text-slate-200 min-w-0">
                         <div className="flex flex-col items-center text-center">
                             <div className="w-full h-24 rounded-md mb-2 overflow-hidden relative bg-slate-200 dark:bg-slate-700">
                                 <img 
@@ -51,7 +50,7 @@ const ComparisonGrid = ({ cars }) => {
                             {feature.label}
                         </div>
                         {cars.map(car => (
-                            <div key={car.id} className="bg-white dark:bg-slate-800/50 p-4 text-slate-600 dark:text-slate-400 text-sm">
+                            <div key={car.id} className="bg-white dark:bg-slate-800/50 p-4 text-slate-600 dark:text-slate-400 text-sm min-w-0">
                                 {Array.isArray(car[feature.key]) ? (
                                     <ul className="space-y-1.5">
                                         {car[feature.key].map((item, i) => <li key={i}>{item}</li>)}
@@ -67,7 +66,7 @@ const ComparisonGrid = ({ cars }) => {
                 {/* --- Fila de Compra --- */}
                 <div className="sticky left-0 bg-white dark:bg-slate-800/50 p-4 font-medium text-slate-800 dark:text-slate-300 flex items-center">Comprar</div>
                 {cars.map(car => (
-                    <div key={car.id} className="bg-white dark:bg-slate-800/50 p-4">
+                    <div key={car.id} className="bg-white dark:bg-slate-800/50 p-4 min-w-0">
                         <a 
                             href={car.mercadoLibreUrl} 
                             target="_blank" 
@@ -143,7 +142,8 @@ function App() {
             )}
 
             {hasSearched && !isLoading && (
-                <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                // SEÑAL DE DEPURACIÓN: Se añade un borde rojo para verificar que el nuevo código está activo.
+                <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 border-4 border-red-500">
                     <div className="flex justify-between items-center mb-6">
                         <button onClick={handleNewSearch} className="flex items-center text-indigo-600 hover:underline font-semibold">
                             <ArrowLeft className="mr-2" size={20} />
