@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Car, Loader2, CheckCircle, XCircle, ExternalLink, Shield, Zap, Gauge, Wind, ArrowLeft, Wrench, Calendar, Hash, Calculator } from 'lucide-react';
-import AdsenseAd from './AdsenseAd';
+// import AdsenseAd from './AdsenseAd'; // Se comenta temporalmente para evitar el error
 
 // --- Componente de Logo ---
 const Logo = () => (
@@ -122,7 +122,7 @@ const SearchPage = () => {
             {cars.length > 0 ? (
                 <>
                     <ComparisonTable cars={cars} />
-                    <AdsenseAd slot="TU_AD_SLOT_ID_1" />
+                    {/* <AdsenseAd slot="TU_AD_SLOT_ID_1" /> */} {/* Se comenta temporalmente */}
                 </>
             ) : (
                 <div className="text-center py-16 bg-white dark:bg-slate-800 rounded-lg shadow-md">
@@ -200,7 +200,7 @@ const ToolsPage = () => {
                     <a href="https://www.runt.com.co/consulta-ciudadana/#/consultaVehiculo" target="_blank" rel="noopener noreferrer" className="w-full bg-blue-500 text-white font-bold py-2 rounded-md hover:bg-blue-600 flex items-center justify-center">Ir al RUNT <ExternalLink size={16} className="ml-2"/></a>
                 </div>
             </div>
-            <AdsenseAd slot="TU_AD_SLOT_ID_2" />
+            {/* <AdsenseAd slot="TU_AD_SLOT_ID_2" /> */} {/* Se comenta temporalmente */}
         </main>
     );
 };
