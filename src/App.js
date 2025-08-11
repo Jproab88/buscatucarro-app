@@ -22,12 +22,12 @@ const ComparisonGrid = ({ cars }) => {
 
     return (
         <div className="w-full overflow-x-auto">
-            <div className="grid grid-cols-[12rem_repeat(5,_14rem)] gap-px bg-slate-200 dark:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
+            {/* CORRECCIÓN CLAVE: Se usa 'grid' en lugar de 'inline-grid' para asegurar el comportamiento de bloque */}
+            <div className="grid grid-cols-[12rem_repeat(5,_minmax(14rem,_1fr))] gap-px bg-slate-200 dark:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
                 {/* --- Fila de Encabezado --- */}
                 <div className="sticky left-0 bg-slate-50 dark:bg-slate-800 p-4 font-semibold text-slate-700 dark:text-slate-200 text-left flex items-center">Vehículo</div>
                 {cars.map(car => (
-                    // CORRECCIÓN: Se añade min-w-0 para forzar el ancho de la columna
-                    <div key={car.id} className="bg-slate-50 dark:bg-slate-800 p-4 font-semibold text-slate-700 dark:text-slate-200 min-w-0">
+                    <div key={car.id} className="bg-slate-50 dark:bg-slate-800 p-4 font-semibold text-slate-700 dark:text-slate-200">
                         <div className="flex flex-col items-center text-center">
                             <div className="w-full h-24 rounded-md mb-2 overflow-hidden relative bg-slate-200 dark:bg-slate-700">
                                 <img 
@@ -51,8 +51,7 @@ const ComparisonGrid = ({ cars }) => {
                             {feature.label}
                         </div>
                         {cars.map(car => (
-                            // CORRECCIÓN: Se añade min-w-0 para forzar el ancho de la columna
-                            <div key={car.id} className="bg-white dark:bg-slate-800/50 p-4 text-slate-600 dark:text-slate-400 text-sm min-w-0">
+                            <div key={car.id} className="bg-white dark:bg-slate-800/50 p-4 text-slate-600 dark:text-slate-400 text-sm">
                                 {Array.isArray(car[feature.key]) ? (
                                     <ul className="space-y-1.5">
                                         {car[feature.key].map((item, i) => <li key={i}>{item}</li>)}
@@ -68,8 +67,7 @@ const ComparisonGrid = ({ cars }) => {
                 {/* --- Fila de Compra --- */}
                 <div className="sticky left-0 bg-white dark:bg-slate-800/50 p-4 font-medium text-slate-800 dark:text-slate-300 flex items-center">Comprar</div>
                 {cars.map(car => (
-                    // CORRECCIÓN: Se añade min-w-0 para forzar el ancho de la columna
-                    <div key={car.id} className="bg-white dark:bg-slate-800/50 p-4 min-w-0">
+                    <div key={car.id} className="bg-white dark:bg-slate-800/50 p-4">
                         <a 
                             href={car.mercadoLibreUrl} 
                             target="_blank" 
