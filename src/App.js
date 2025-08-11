@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
-import { Search, Car, Loader2, CheckCircle, XCircle, ExternalLink, Shield, Zap, Gauge, Wind, ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Car, Loader2, CheckCircle, XCircle, ExternalLink, Shield, Zap, Gauge, Wind, ArrowLeft, Wrench, Calendar, Hash, Calculator } from 'lucide-react';
+import AdsenseAd from './AdsenseAd';
 
 // --- Componente de Logo ---
 const Logo = () => (
-    <div className="flex items-center justify-center space-x-2">
-        <Car className="h-10 w-10 text-indigo-600 dark:text-indigo-400" />
-        <span className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">BuscaTuCarro IA</span>
+    <div className="flex items-center space-x-2">
+        <Car className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
+        <span className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">BuscaTuCarro IA</span>
     </div>
 );
 
-// --- Componente de Tabla Comparativa (Reconstruido con <table>) ---
+// --- Componente de la Tabla Comparativa ---
 const ComparisonTable = ({ cars }) => {
     const features = [
         { key: 'pros', label: 'Pros', icon: CheckCircle, color: 'text-green-500' },
@@ -24,8 +25,8 @@ const ComparisonTable = ({ cars }) => {
         <div className="w-full overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-lg">
             <table className="min-w-full border-collapse table-fixed">
                 <colgroup>
-                    <col className="w-48" /> {/* Columna de Características */}
-                    {cars.map(car => <col key={car.id} className="w-56" />)} {/* Columnas de Carros */}
+                    <col className="w-48" />
+                    {cars.map(car => <col key={car.id} className="w-56" />)}
                 </colgroup>
                 <thead>
                     <tr className="bg-slate-50 dark:bg-slate-800">
@@ -34,12 +35,7 @@ const ComparisonTable = ({ cars }) => {
                             <th key={car.id} className="p-4 font-semibold text-slate-700 dark:text-slate-200 border-l border-slate-200 dark:border-slate-700">
                                 <div className="flex flex-col items-center text-center">
                                     <div className="w-48 h-28 rounded-md mb-2 overflow-hidden relative bg-slate-200 dark:bg-slate-700">
-                                        <img 
-                                            src={car.imageUrl} 
-                                            alt={`${car.make} ${car.model}`}
-                                            className="absolute top-0 left-0 w-full h-full object-cover"
-                                            onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/300x200/334155/ffffff?text=Imagen`; }}
-                                        />
+                                        <img src={car.imageUrl} alt={`${car.make} ${car.model}`} className="absolute top-0 left-0 w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/300x200/334155/ffffff?text=Imagen`; }}/>
                                     </div>
                                     <span className="font-bold text-indigo-600 dark:text-indigo-400">{car.make}</span>
                                     <span>{car.model}</span>
@@ -51,39 +47,13 @@ const ComparisonTable = ({ cars }) => {
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
                     {features.map(feature => (
                         <tr key={feature.key}>
-                            <td className="sticky left-0 bg-white dark:bg-slate-800/50 p-4 font-medium text-slate-800 dark:text-slate-300 align-top">
-                                <div className="flex items-center">
-                                    <feature.icon className={`w-5 h-5 mr-2 ${feature.color} flex-shrink-0`} />
-                                    {feature.label}
-                                </div>
-                            </td>
-                            {cars.map(car => (
-                                <td key={car.id} className="p-4 text-slate-600 dark:text-slate-400 align-top border-l border-slate-200 dark:border-slate-700 text-sm">
-                                    {Array.isArray(car[feature.key]) ? (
-                                        <ul className="space-y-1.5">
-                                            {car[feature.key].map((item, i) => <li key={i}>{item}</li>)}
-                                        </ul>
-                                    ) : (
-                                        <span>{car[feature.key]}</span>
-                                    )}
-                                </td>
-                            ))}
+                            <td className="sticky left-0 bg-white dark:bg-slate-800/50 p-4 font-medium text-slate-800 dark:text-slate-300 align-top"><div className="flex items-center"><feature.icon className={`w-5 h-5 mr-2 ${feature.color} flex-shrink-0`} />{feature.label}</div></td>
+                            {cars.map(car => (<td key={car.id} className="p-4 text-slate-600 dark:text-slate-400 align-top border-l border-slate-200 dark:border-slate-700 text-sm">{Array.isArray(car[feature.key]) ? (<ul className="space-y-1.5">{car[feature.key].map((item, i) => <li key={i}>{item}</li>)}</ul>) : (<span>{car[feature.key]}</span>)}</td>))}
                         </tr>
                     ))}
                     <tr>
                         <td className="sticky left-0 bg-white dark:bg-slate-800/50 p-4 font-medium text-slate-800 dark:text-slate-300 align-top">Comprar</td>
-                        {cars.map(car => (
-                            <td key={car.id} className="p-4 align-middle border-l border-slate-200 dark:border-slate-700">
-                                <a 
-                                    href={car.mercadoLibreUrl} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer" 
-                                    className="w-full bg-yellow-400 text-slate-900 font-bold py-2 px-3 rounded-lg hover:bg-yellow-500 transition-colors text-sm flex items-center justify-center"
-                                >
-                                    Mercado Libre <ExternalLink size={14} className="ml-1.5"/>
-                                </a>
-                            </td>
-                        ))}
+                        {cars.map(car => (<td key={car.id} className="p-4 align-middle border-l border-slate-200 dark:border-slate-700"><a href={car.mercadoLibreUrl} target="_blank" rel="noopener noreferrer" className="w-full bg-yellow-400 text-slate-900 font-bold py-2 px-3 rounded-lg hover:bg-yellow-500 transition-colors text-sm flex items-center justify-center">Mercado Libre <ExternalLink size={14} className="ml-1.5"/></a></td>))}
                     </tr>
                 </tbody>
             </table>
@@ -91,8 +61,8 @@ const ComparisonTable = ({ cars }) => {
     );
 };
 
-// --- Componente Principal con Lógica de Vistas ---
-function App() {
+// --- Componente de la Página de Búsqueda ---
+const SearchPage = () => {
     const [cars, setCars] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
@@ -117,60 +87,145 @@ function App() {
         }
     };
 
-    const handleNewSearch = () => {
-        setHasSearched(false);
-        setCars([]);
-        setSearchInput('');
+    if (!hasSearched && !isLoading) {
+        return (
+            <div className="flex-grow flex flex-col justify-center items-center text-center px-4">
+                <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-3 tracking-tight">Tu Próximo Carro, <span className="text-indigo-600">Más Cerca.</span></h1>
+                <p className="text-lg text-slate-600 dark:text-slate-300 max-w-lg mx-auto my-6">Describe el carro que necesitas y te traeremos las mejores 5 opciones del mercado en una tabla comparativa.</p>
+                <div className="w-full max-w-2xl">
+                    <form onSubmit={handleSearch} className="relative">
+                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" size={24} />
+                        <input type="text" name="keyword" placeholder="Ej: 'SUV familiar y segura para viajar'" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} className="w-full pl-14 pr-32 py-4 border border-slate-300 dark:border-slate-600 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:text-white text-lg shadow-lg" />
+                        <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 bg-indigo-600 text-white font-bold px-6 py-2.5 rounded-full hover:bg-indigo-700 transition-colors shadow-md">Buscar</button>
+                    </form>
+                </div>
+            </div>
+        );
+    }
+
+    if (isLoading) {
+        return (
+            <div className="flex-grow flex flex-col justify-center items-center text-center px-4">
+                <Loader2 className="w-12 h-12 text-indigo-500 animate-spin" />
+                <p className="mt-4 text-slate-500">Analizando el mercado para ti...</p>
+            </div>
+        );
+    }
+
+    return (
+        <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex justify-between items-center mb-6">
+                <button onClick={() => { setHasSearched(false); setCars([]); setSearchInput(''); }} className="flex items-center text-indigo-600 hover:underline font-semibold"><ArrowLeft className="mr-2" size={20} />Nueva Búsqueda</button>
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white text-center">Aquí tienes tu comparativa:</h2>
+                <div className="w-40"></div>
+            </div>
+            {cars.length > 0 ? (
+                <>
+                    <ComparisonTable cars={cars} />
+                    <AdsenseAd slot="TU_AD_SLOT_ID_1" />
+                </>
+            ) : (
+                <div className="text-center py-16 bg-white dark:bg-slate-800 rounded-lg shadow-md">
+                    <Car size={48} className="mx-auto text-slate-400" />
+                    <h3 className="mt-2 text-xl font-semibold text-slate-900 dark:text-white">No se encontraron vehículos</h3>
+                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Intenta con una descripción diferente.</p>
+                </div>
+            )}
+        </main>
+    );
+};
+
+// --- NUEVO Componente de la Página de Herramientas ---
+const ToolsPage = () => {
+    const [city, setCity] = useState('Bogota');
+    const [avalúo, setAvalúo] = useState('');
+    const [tax, setTax] = useState(null);
+
+    const picoYPlacaData = {
+        Bogota: { L: '1-2-3-4-5', M: '6-7-8-9-0', X: '1-2-3-4-5', J: '6-7-8-9-0', V: '1-2-3-4-5' },
+        Medellin: { L: '7-1', M: '8-2', X: '9-3', J: '5-4', V: '6-0' },
+        Cali: { L: '1-2', M: '3-4', X: '5-6', J: '7-8', V: '9-0' },
+    };
+    const today = new Date().toLocaleString('es-CO', { weekday: 'short' }).toUpperCase().charAt(0);
+    const todayDigits = picoYPlacaData[city][today] || 'No aplica';
+
+    const handleTaxCalculation = (e) => {
+        e.preventDefault();
+        const value = Number(avalúo);
+        if (!value || value <= 0) {
+            setTax(null);
+            return;
+        }
+        let calculatedTax;
+        if (value <= 54057000) {
+            calculatedTax = value * 0.015;
+        } else if (value <= 121635000) {
+            calculatedTax = value * 0.025;
+        } else {
+            calculatedTax = value * 0.035;
+        }
+        setTax(calculatedTax);
     };
 
     return (
+        <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-8 text-center">Herramientas para Conductores</h1>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {/* Pico y Placa */}
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md">
+                    <div className="flex items-center mb-4"><Calendar className="w-6 h-6 mr-3 text-indigo-500" /><h2 className="text-xl font-bold">Pico y Placa Hoy</h2></div>
+                    <select value={city} onChange={(e) => setCity(e.target.value)} className="w-full p-2 mb-4 border border-slate-300 dark:border-slate-600 rounded-md bg-slate-50 dark:bg-slate-700">
+                        <option value="Bogota">Bogotá</option>
+                        <option value="Medellin">Medellín</option>
+                        <option value="Cali">Cali</option>
+                    </select>
+                    <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-md text-center">
+                        <p className="text-slate-600 dark:text-slate-300">Placas terminadas en:</p>
+                        <p className="text-4xl font-extrabold text-indigo-600 dark:text-indigo-400">{todayDigits}</p>
+                    </div>
+                </div>
+                {/* Calculadora de Impuestos */}
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md">
+                    <div className="flex items-center mb-4"><Calculator className="w-6 h-6 mr-3 text-indigo-500" /><h2 className="text-xl font-bold">Calculadora de Impuesto</h2></div>
+                    <form onSubmit={handleTaxCalculation}>
+                        <input type="number" placeholder="Valor del avalúo (ej: 50000000)" value={avalúo} onChange={(e) => setAvalúo(e.target.value)} className="w-full p-2 mb-4 border border-slate-300 dark:border-slate-600 rounded-md bg-slate-50 dark:bg-slate-700" />
+                        <button type="submit" className="w-full bg-indigo-600 text-white font-bold py-2 rounded-md hover:bg-indigo-700">Calcular</button>
+                    </form>
+                    {tax !== null && <div className="mt-4 bg-slate-100 dark:bg-slate-700 p-4 rounded-md text-center"><p className="text-slate-600 dark:text-slate-300">Impuesto estimado:</p><p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">${tax.toLocaleString('es-CO')}</p></div>}
+                </div>
+                {/* Consulta RUNT */}
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md">
+                    <div className="flex items-center mb-4"><Hash className="w-6 h-6 mr-3 text-indigo-500" /><h2 className="text-xl font-bold">Consulta RUNT</h2></div>
+                    <p className="text-slate-600 dark:text-slate-300 mb-4">Verifica el historial de un vehículo, multas y más en el sitio oficial del RUNT.</p>
+                    <a href="https://www.runt.com.co/consulta-ciudadana/#/consultaVehiculo" target="_blank" rel="noopener noreferrer" className="w-full bg-blue-500 text-white font-bold py-2 rounded-md hover:bg-blue-600 flex items-center justify-center">Ir al RUNT <ExternalLink size={16} className="ml-2"/></a>
+                </div>
+            </div>
+            <AdsenseAd slot="TU_AD_SLOT_ID_2" />
+        </main>
+    );
+};
+
+// --- Componente Principal con Navegación ---
+function App() {
+    const [view, setView] = useState('buscador'); // 'buscador' o 'herramientas'
+
+    return (
         <div className="bg-slate-100 dark:bg-slate-900 min-h-screen font-sans text-slate-800 dark:text-slate-200 flex flex-col">
-            {!hasSearched && !isLoading && (
-                <div className="flex-grow flex flex-col justify-center items-center text-center px-4">
+            <header className="bg-white/80 dark:bg-slate-900/80 shadow-sm sticky top-0 z-40 backdrop-blur-lg">
+                <nav className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
                     <Logo />
-                    <p className="text-lg text-slate-600 dark:text-slate-300 max-w-lg mx-auto my-6">
-                        Describe el carro que necesitas en la casilla de búsqueda y te traeremos las mejores 5 opciones que haya disponibles en el mercado.
-                    </p>
-                    <div className="w-full max-w-2xl">
-                        <form onSubmit={handleSearch} className="relative">
-                            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" size={24} />
-                            <input type="text" name="keyword" placeholder="Ej: 'SUV familiar y segura para viajar'" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} className="w-full pl-14 pr-32 py-4 border border-slate-300 dark:border-slate-600 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:text-white text-lg shadow-lg" />
-                            <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 bg-indigo-600 text-white font-bold px-6 py-2.5 rounded-full hover:bg-indigo-700 transition-colors shadow-md">
-                                Buscar
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {isLoading && (
-                <div className="flex-grow flex flex-col justify-center items-center text-center px-4">
-                    <Loader2 className="w-12 h-12 text-indigo-500 animate-spin" />
-                    <p className="mt-4 text-slate-500">Analizando el mercado para ti...</p>
-                </div>
-            )}
-
-            {hasSearched && !isLoading && (
-                <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <div className="flex justify-between items-center mb-6">
-                        <button onClick={handleNewSearch} className="flex items-center text-indigo-600 hover:underline font-semibold">
-                            <ArrowLeft className="mr-2" size={20} />
-                            Nueva Búsqueda
+                    <div className="flex items-center space-x-2 bg-slate-200 dark:bg-slate-800 p-1 rounded-full">
+                        <button onClick={() => setView('buscador')} className={`px-4 py-1.5 rounded-full text-sm font-semibold ${view === 'buscador' ? 'bg-white dark:bg-slate-700 text-indigo-600' : 'text-slate-600 dark:text-slate-300'}`}>
+                            <Search className="w-4 h-4 inline mr-2" />Buscador
                         </button>
-                        <h2 className="text-3xl font-bold text-slate-900 dark:text-white text-center">Aquí tienes tu comparativa:</h2>
-                        <div className="w-40"></div> {/* Espaciador para centrar el título */}
+                        <button onClick={() => setView('herramientas')} className={`px-4 py-1.5 rounded-full text-sm font-semibold ${view === 'herramientas' ? 'bg-white dark:bg-slate-700 text-indigo-600' : 'text-slate-600 dark:text-slate-300'}`}>
+                            <Wrench className="w-4 h-4 inline mr-2" />Herramientas
+                        </button>
                     </div>
-                    {cars.length > 0 ? (
-                        <ComparisonTable cars={cars} />
-                    ) : (
-                        <div className="text-center py-16 bg-white dark:bg-slate-800 rounded-lg shadow-md">
-                            <Car size={48} className="mx-auto text-slate-400" />
-                            <h3 className="mt-2 text-xl font-semibold text-slate-900 dark:text-white">No se encontraron vehículos</h3>
-                            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Intenta con una descripción diferente.</p>
-                        </div>
-                    )}
-                </main>
-            )}
+                </nav>
+            </header>
+            
+            {view === 'buscador' ? <SearchPage /> : <ToolsPage />}
 
             <footer className="w-full text-center p-4 mt-auto">
                 <p className="text-sm text-slate-500 dark:text-slate-400">&copy; {new Date().getFullYear()} BuscaTuCarro IA. Todos los derechos reservados.</p>
