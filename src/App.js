@@ -1,71 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Car, Loader2, CheckCircle, XCircle, ExternalLink, Shield, Zap, Gauge, Wind, ArrowLeft, Wrench, Newspaper, Calendar, Hash, Calculator } from 'lucide-react';
+import { Search, Car, Loader2, CheckCircle, XCircle, ExternalLink, Shield, Zap, Gauge, Wind, ArrowLeft, Wrench, Newspaper, Calendar, Hash, Calculator, GitCompareArrows } from 'lucide-react';
+
+// --- Base de Datos de Vehículos para los Desplegables ---
+// En una app real, esto vendría de una base de datos.
+const carDatabase = {
+    "Toyota": {
+        "Corolla": ["2023", "2022", "2021"],
+        "RAV4": ["2023", "2022", "2021"],
+        "Hilux": ["2024", "2023", "2022"],
+    },
+    "Mazda": {
+        "3": ["2024", "2023", "2022"],
+        "CX-5": ["2024", "2023", "2022"],
+        "2": ["2023", "2022", "2021"],
+    },
+    "Chevrolet": {
+        "Onix": ["2024", "2023", "2022"],
+        "Tracker": ["2024", "2023", "2022"],
+        "D-Max": ["2023", "2022", "2021"],
+    },
+    "Renault": {
+        "Duster": ["2024", "2023", "2022"],
+        "Kwid": ["2023", "2022", "2021"],
+        "Stepway": ["2023", "2022", "2021"],
+    },
+    "Kia": {
+        "Sportage": ["2023", "2022", "2021"],
+        "Picanto": ["2024", "2023", "2022"],
+        "Rio": ["2023", "2022", "2021"],
+    }
+};
 
 // --- Datos de Ejemplo para el Blog (mientras no conectamos la DB) ---
 const mockArticles = [
-    { id: '1', title: 'SUVs vs. Sedanes: ¿Cuál es la Mejor Opción para las Vías Colombianas?', summary: 'Analizamos las ventajas y desventajas de cada categoría para ayudarte a decidir cuál se adapta mejor a tu estilo de vida y a las carreteras del país.', content: 'Cuando se trata de comprar un carro en Colombia, una de las decisiones más grandes es elegir entre un SUV y un sedán. Ambos tienen sus méritos, pero están diseñados para necesidades muy diferentes.\n\n### Espacio y Versatilidad: El Territorio del SUV\nLos Sport Utility Vehicles (SUVs) son los reyes de la versatilidad. Su mayor altura sobre el suelo los hace ideales para enfrentar los huecos y las carreteras sin pavimentar que a menudo encontramos fuera de las ciudades principales. Además, su amplio espacio interior y maletero son perfectos para familias o para quienes disfrutan de los viajes de fin de semana.\n\n* **Pros:** Mayor espacio, mejor para terrenos difíciles, sensación de seguridad por la altura.\n* **Contras:** Mayor consumo de combustible, más caros en promedio.\n\n### Eficiencia y Manejo: La Elegancia del Sedán\nPor otro lado, los sedanes ofrecen una experiencia de manejo más ágil y conectada con la carretera. Su centro de gravedad más bajo se traduce en mayor estabilidad en curvas y una conducción más deportiva. Generalmente, son más eficientes en el consumo de combustible, lo que los convierte en una opción inteligente para el tráfico diario de ciudades como Bogotá o Medellín.\n\n* **Pros:** Mejor eficiencia, manejo más deportivo, usualmente más económicos.\n* **Contras:** Menos espacio, no son ideales para terrenos complicados.', imageUrl: 'https://images.pexels.com/photos/1637859/pexels-photo-1637859.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' },
-    { id: '2', title: 'Top 5: Los Carros Más Vendidos en la Historia de Colombia', summary: 'Un recorrido por los modelos icónicos que han conquistado los corazones y las carreteras de los colombianos a lo largo de las décadas.', content: 'Contenido del artículo sobre los carros más vendidos...', imageUrl: 'https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' },
+    { id: '1', title: 'SUVs vs. Sedanes: ¿Cuál es la Mejor Opción para las Vías Colombianas?', summary: 'Analizamos las ventajas y desventajas de cada categoría para ayudarte a decidir cuál se adapta mejor a tu estilo de vida y a las carreteras del país.', content: 'Cuando se trata de comprar un carro en Colombia, una de las decisiones más grandes es elegir entre un SUV y un sedán...', imageUrl: 'https://images.pexels.com/photos/1637859/pexels-photo-1637859.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' },
+    { id: '2', title: 'Top 5: Los Carros Más Vendidos en la Historia de Colombia', summary: 'Un recorrido por los modelos icónicos que han conquistado los corazones y las carreteras de los colombianos.', content: 'Contenido del artículo sobre los carros más vendidos...', imageUrl: 'https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' },
 ];
 
-
 // --- Componente de Logo ---
-const Logo = () => (
-    <div className="flex items-center space-x-2">
-        <Car className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
-        <span className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">MiCarroIdeal IA</span>
-    </div>
-);
-
-// --- Componente de la Tabla Comparativa ---
-const ComparisonTable = ({ cars }) => {
-    const features = [
-        { key: 'pros', label: 'Pros', icon: CheckCircle, color: 'text-green-500' },
-        { key: 'cons', label: 'Contras', icon: XCircle, color: 'text-red-500' },
-        { key: 'airbags', label: 'Seguridad', icon: Shield, color: 'text-blue-500' },
-        { key: 'horsepower', label: 'Potencia', icon: Zap, color: 'text-yellow-500' },
-        { key: 'topSpeed', label: 'Vel. Máxima', icon: Wind, color: 'text-cyan-500' },
-        { key: 'fuelEfficiency', label: 'Consumo', icon: Gauge, color: 'text-orange-500' },
-    ];
-
-    return (
-        <div className="w-full overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-lg">
-            <table className="min-w-full border-collapse table-fixed">
-                <colgroup>
-                    <col className="w-48" />
-                    {cars.map(car => <col key={car.id} className="w-56" />)}
-                </colgroup>
-                <thead>
-                    <tr className="bg-slate-50 dark:bg-slate-800">
-                        <th className="sticky left-0 bg-slate-50 dark:bg-slate-800 p-4 font-semibold text-slate-700 dark:text-slate-200 text-left">Vehículo</th>
-                        {cars.map(car => (
-                            <th key={car.id} className="p-4 font-semibold text-slate-700 dark:text-slate-200 border-l border-slate-200 dark:border-slate-700">
-                                <div className="flex flex-col items-center text-center">
-                                    <div className="w-48 h-28 rounded-md mb-2 overflow-hidden relative bg-slate-200 dark:bg-slate-700">
-                                        <img src={car.imageUrl} alt={`${car.make} ${car.model}`} className="absolute top-0 left-0 w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/300x200/334155/ffffff?text=Imagen`; }}/>
-                                    </div>
-                                    <span className="font-bold text-indigo-600 dark:text-indigo-400">{car.make}</span>
-                                    <span>{car.model}</span>
-                                </div>
-                            </th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-                    {features.map(feature => (
-                        <tr key={feature.key}>
-                            <td className="sticky left-0 bg-white dark:bg-slate-800/50 p-4 font-medium text-slate-800 dark:text-slate-300 align-top"><div className="flex items-center"><feature.icon className={`w-5 h-5 mr-2 ${feature.color} flex-shrink-0`} />{feature.label}</div></td>
-                            {cars.map(car => (<td key={car.id} className="p-4 text-slate-600 dark:text-slate-400 align-top border-l border-slate-200 dark:border-slate-700 text-sm">{Array.isArray(car[feature.key]) ? (<ul className="space-y-1.5">{car[feature.key].map((item, i) => <li key={i}>{item}</li>)}</ul>) : (<span>{car[feature.key]}</span>)}</td>))}
-                        </tr>
-                    ))}
-                    <tr>
-                        <td className="sticky left-0 bg-white dark:bg-slate-800/50 p-4 font-medium text-slate-800 dark:text-slate-300 align-top">Comprar</td>
-                        {cars.map(car => (<td key={car.id} className="p-4 align-middle border-l border-slate-200 dark:border-slate-700"><a href={car.mercadoLibreUrl} target="_blank" rel="noopener noreferrer" className="w-full bg-yellow-400 text-slate-900 font-bold py-2 px-3 rounded-lg hover:bg-yellow-500 transition-colors text-sm flex items-center justify-center">Mercado Libre <ExternalLink size={14} className="ml-1.5"/></a></td>))}
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    );
-};
+const Logo = () => ( <div className="flex items-center space-x-2"><Car className="h-8 w-8 text-indigo-600 dark:text-indigo-400" /><span className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">MiCarroIdeal IA</span></div> );
 
 // --- Componente de la Página de Búsqueda ---
 const SearchPage = () => {
@@ -117,7 +90,7 @@ const SearchPage = () => {
             </div>
         );
     }
-
+    
     return (
         <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex justify-between items-center mb-6">
@@ -135,6 +108,56 @@ const SearchPage = () => {
                 </div>
             )}
         </main>
+    );
+};
+
+const ComparisonTable = ({ cars }) => {
+    const features = [
+        { key: 'pros', label: 'Pros', icon: CheckCircle, color: 'text-green-500' },
+        { key: 'cons', label: 'Contras', icon: XCircle, color: 'text-red-500' },
+        { key: 'airbags', label: 'Seguridad', icon: Shield, color: 'text-blue-500' },
+        { key: 'horsepower', label: 'Potencia', icon: Zap, color: 'text-yellow-500' },
+        { key: 'topSpeed', label: 'Vel. Máxima', icon: Wind, color: 'text-cyan-500' },
+        { key: 'fuelEfficiency', label: 'Consumo', icon: Gauge, color: 'text-orange-500' },
+    ];
+
+    return (
+        <div className="w-full overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-lg">
+            <table className="min-w-full border-collapse table-fixed">
+                <colgroup>
+                    <col className="w-48" />
+                    {cars.map(car => <col key={car.id} className="w-56" />)}
+                </colgroup>
+                <thead>
+                    <tr className="bg-slate-50 dark:bg-slate-800">
+                        <th className="sticky left-0 bg-slate-50 dark:bg-slate-800 p-4 font-semibold text-slate-700 dark:text-slate-200 text-left">Vehículo</th>
+                        {cars.map(car => (
+                            <th key={car.id} className="p-4 font-semibold text-slate-700 dark:text-slate-200 border-l border-slate-200 dark:border-slate-700">
+                                <div className="flex flex-col items-center text-center">
+                                    <div className="w-48 h-28 rounded-md mb-2 overflow-hidden relative bg-slate-200 dark:bg-slate-700">
+                                        <img src={car.imageUrl} alt={`${car.make} ${car.model}`} className="absolute top-0 left-0 w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/300x200/334155/ffffff?text=Imagen`; }}/>
+                                    </div>
+                                    <span className="font-bold text-indigo-600 dark:text-indigo-400">{car.make}</span>
+                                    <span>{car.model}</span>
+                                </div>
+                            </th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+                    {features.map(feature => (
+                        <tr key={feature.key}>
+                            <td className="sticky left-0 bg-white dark:bg-slate-800/50 p-4 font-medium text-slate-800 dark:text-slate-300 align-top"><div className="flex items-center"><feature.icon className={`w-5 h-5 mr-2 ${feature.color} flex-shrink-0`} />{feature.label}</div></td>
+                            {cars.map(car => (<td key={car.id} className="p-4 text-slate-600 dark:text-slate-400 align-top border-l border-slate-200 dark:border-slate-700 text-sm">{Array.isArray(car[feature.key]) ? (<ul className="space-y-1.5">{car[feature.key].map((item, i) => <li key={i}>{item}</li>)}</ul>) : (<span>{car[feature.key]}</span>)}</td>))}
+                        </tr>
+                    ))}
+                    <tr>
+                        <td className="sticky left-0 bg-white dark:bg-slate-800/50 p-4 font-medium text-slate-800 dark:text-slate-300 align-top">Comprar</td>
+                        {cars.map(car => (<td key={car.id} className="p-4 align-middle border-l border-slate-200 dark:border-slate-700"><a href={car.mercadoLibreUrl} target="_blank" rel="noopener noreferrer" className="w-full bg-yellow-400 text-slate-900 font-bold py-2 px-3 rounded-lg hover:bg-yellow-500 transition-colors text-sm flex items-center justify-center">Mercado Libre <ExternalLink size={14} className="ml-1.5"/></a></td>))}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     );
 };
 
@@ -214,14 +237,6 @@ const BlogPage = () => {
     const [selectedArticle, setSelectedArticle] = useState(null);
 
     useEffect(() => {
-        // En un futuro, aquí llamaríamos a un endpoint /api/get-articles
-        // que leería los artículos desde la base de datos de Firestore.
-        // fetch('/api/get-articles').then(res => res.json()).then(data => {
-        //    setArticles(data);
-        //    setIsLoading(false);
-        // });
-        
-        // Por ahora, usamos los datos de ejemplo.
         setTimeout(() => {
             setArticles(mockArticles);
             setIsLoading(false);
@@ -263,9 +278,142 @@ const BlogPage = () => {
     );
 };
 
+// --- NUEVO Componente de la Página del Comparador ---
+const ComparatorPage = () => {
+    const initialSlots = [
+        { id: 1, make: '', model: '', year: '' },
+        { id: 2, make: '', model: '', year: '' },
+        { id: 3, make: '', model: '', year: '' },
+        { id: 4, make: '', model: '', year: '' },
+    ];
+    const [vehicleSlots, setVehicleSlots] = useState(initialSlots);
+    const [comparisonResult, setComparisonResult] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleSelectorChange = (id, field, value) => {
+        setVehicleSlots(prevSlots => prevSlots.map(slot => {
+            if (slot.id === id) {
+                const newSlot = { ...slot, [field]: value };
+                if (field === 'make') { newSlot.model = ''; newSlot.year = ''; }
+                if (field === 'model') { newSlot.year = ''; }
+                return newSlot;
+            }
+            return slot;
+        }));
+    };
+
+    const handleCompare = async () => {
+        const vehiclesToCompare = vehicleSlots.filter(slot => slot.make && slot.model && slot.year);
+        if (vehiclesToCompare.length < 2) {
+            alert("Por favor selecciona al menos dos vehículos para comparar.");
+            return;
+        }
+        setIsLoading(true);
+        setComparisonResult([]);
+        try {
+            const response = await fetch('/api/compare', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ vehicles: vehicleSlots }),
+            });
+            if (!response.ok) { throw new Error('Error en la respuesta de la API'); }
+            const data = await response.json();
+            setComparisonResult(data);
+        } catch (error) {
+            console.error("Error al comparar:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
+    const features = [
+        { key: 'pros', label: 'Pros', icon: CheckCircle, color: 'text-green-500' },
+        { key: 'cons', label: 'Contras', icon: XCircle, color: 'text-red-500' },
+        { key: 'airbags', label: 'Seguridad', icon: Shield, color: 'text-blue-500' },
+        { key: 'horsepower', label: 'Potencia', icon: Zap, color: 'text-yellow-500' },
+        { key: 'topSpeed', label: 'Vel. Máxima', icon: Wind, color: 'text-cyan-500' },
+        { key: 'fuelEfficiency', label: 'Consumo', icon: Gauge, color: 'text-orange-500' },
+    ];
+
+    return (
+        <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2 text-center">Comparador de Vehículos</h1>
+            <p className="text-center text-slate-600 dark:text-slate-400 mb-8">Selecciona hasta 4 vehículos para ver sus características lado a lado.</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                {vehicleSlots.map(slot => (
+                    <div key={slot.id} className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md space-y-3">
+                        <h3 className="font-bold text-lg text-center">Vehículo {slot.id}</h3>
+                        <select value={slot.make} onChange={(e) => handleSelectorChange(slot.id, 'make', e.target.value)} className="w-full p-2 border border-slate-300 dark:border-slate-600 rounded-md bg-slate-50 dark:bg-slate-700">
+                            <option value="">Selecciona Marca</option>
+                            {Object.keys(carDatabase).map(make => <option key={make} value={make}>{make}</option>)}
+                        </select>
+                        <select value={slot.model} onChange={(e) => handleSelectorChange(slot.id, 'model', e.target.value)} disabled={!slot.make} className="w-full p-2 border border-slate-300 dark:border-slate-600 rounded-md bg-slate-50 dark:bg-slate-700 disabled:opacity-50">
+                            <option value="">Selecciona Modelo</option>
+                            {slot.make && Object.keys(carDatabase[slot.make]).map(model => <option key={model} value={model}>{model}</option>)}
+                        </select>
+                        <select value={slot.year} onChange={(e) => handleSelectorChange(slot.id, 'year', e.target.value)} disabled={!slot.model} className="w-full p-2 border border-slate-300 dark:border-slate-600 rounded-md bg-slate-50 dark:bg-slate-700 disabled:opacity-50">
+                            <option value="">Selecciona Año</option>
+                            {slot.model && carDatabase[slot.make][slot.model].map(year => <option key={year} value={year}>{year}</option>)}
+                        </select>
+                    </div>
+                ))}
+            </div>
+
+            <div className="text-center mb-8">
+                <button onClick={handleCompare} disabled={isLoading} className="bg-indigo-600 text-white font-bold px-8 py-3 rounded-full hover:bg-indigo-700 transition-colors shadow-lg disabled:bg-indigo-400 flex items-center justify-center mx-auto">
+                    {isLoading ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Comparando...</> : <><GitCompareArrows className="w-5 h-5 mr-2" /> Comparar</>}
+                </button>
+            </div>
+
+            {comparisonResult.length > 0 && !isLoading && (
+                 <div className="w-full overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-lg">
+                    <table className="min-w-full border-collapse table-fixed">
+                        <colgroup>
+                            <col className="w-48" />
+                            {comparisonResult.map((car, index) => <col key={index} className="w-56" />)}
+                        </colgroup>
+                        <thead>
+                            <tr className="bg-slate-50 dark:bg-slate-800">
+                                <th className="sticky left-0 bg-slate-50 dark:bg-slate-800 p-4 font-semibold text-slate-700 dark:text-slate-200 text-left">Vehículo</th>
+                                {comparisonResult.map((car, index) => (
+                                    <th key={index} className="p-4 font-semibold text-slate-700 dark:text-slate-200 border-l border-slate-200 dark:border-slate-700">
+                                        {car ? (
+                                            <div className="flex flex-col items-center text-center">
+                                                <div className="w-48 h-28 rounded-md mb-2 overflow-hidden relative bg-slate-200 dark:bg-slate-700">
+                                                    <img src={car.imageUrl} alt={`${car.make} ${car.model}`} className="absolute top-0 left-0 w-full h-full object-cover" />
+                                                </div>
+                                                <span className="font-bold text-indigo-600 dark:text-indigo-400">{car.make}</span>
+                                                <span>{`${car.model} ${car.year}`}</span>
+                                            </div>
+                                        ) : <div className="h-44"></div>}
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                         <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+                            {features.map(feature => (
+                                <tr key={feature.key}>
+                                    <td className="sticky left-0 bg-white dark:bg-slate-800/50 p-4 font-medium text-slate-800 dark:text-slate-300 align-top"><div className="flex items-center"><feature.icon className={`w-5 h-5 mr-2 ${feature.color} flex-shrink-0`} />{feature.label}</div></td>
+                                    {comparisonResult.map((car, index) => (<td key={index} className="p-4 text-slate-600 dark:text-slate-400 align-top border-l border-slate-200 dark:border-slate-700 text-sm">{car && (Array.isArray(car[feature.key]) ? (<ul className="space-y-1.5">{car[feature.key].map((item, i) => <li key={i}>{item}</li>)}</ul>) : (<span>{car[feature.key]}</span>))}</td>))}
+                                </tr>
+                            ))}
+                            <tr>
+                                <td className="sticky left-0 bg-white dark:bg-slate-800/50 p-4 font-medium text-slate-800 dark:text-slate-300 align-top">Comprar</td>
+                                {comparisonResult.map((car, index) => (<td key={index} className="p-4 align-middle border-l border-slate-200 dark:border-slate-700">{car && <a href={car.mercadoLibreUrl} target="_blank" rel="noopener noreferrer" className="w-full bg-yellow-400 text-slate-900 font-bold py-2 px-3 rounded-lg hover:bg-yellow-500 transition-colors text-sm flex items-center justify-center">Mercado Libre <ExternalLink size={14} className="ml-1.5"/></a>}</td>))}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </main>
+    );
+};
+
+
 // --- Componente Principal con Navegación ---
 function App() {
-    const [view, setView] = useState('buscador'); // 'buscador', 'herramientas', o 'blog'
+    const [view, setView] = useState('buscador'); // 'buscador', 'herramientas', 'blog', o 'comparador'
 
     return (
         <div className="bg-slate-100 dark:bg-slate-900 min-h-screen font-sans text-slate-800 dark:text-slate-200 flex flex-col">
@@ -274,6 +422,7 @@ function App() {
                     <Logo />
                     <div className="flex items-center space-x-1 bg-slate-200 dark:bg-slate-800 p-1 rounded-full">
                         <button onClick={() => setView('buscador')} className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${view === 'buscador' ? 'bg-white dark:bg-slate-700 text-indigo-600' : 'text-slate-600 dark:text-slate-300'}`}><Search className="w-4 h-4 inline mr-1.5" />Buscador</button>
+                        <button onClick={() => setView('comparador')} className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${view === 'comparador' ? 'bg-white dark:bg-slate-700 text-indigo-600' : 'text-slate-600 dark:text-slate-300'}`}><GitCompareArrows className="w-4 h-4 inline mr-1.5" />Comparador</button>
                         <button onClick={() => setView('herramientas')} className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${view === 'herramientas' ? 'bg-white dark:bg-slate-700 text-indigo-600' : 'text-slate-600 dark:text-slate-300'}`}><Wrench className="w-4 h-4 inline mr-1.5" />Herramientas</button>
                         <button onClick={() => setView('blog')} className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${view === 'blog' ? 'bg-white dark:bg-slate-700 text-indigo-600' : 'text-slate-600 dark:text-slate-300'}`}><Newspaper className="w-4 h-4 inline mr-1.5" />Blog</button>
                     </div>
@@ -281,6 +430,7 @@ function App() {
             </header>
             
             {view === 'buscador' && <SearchPage />}
+            {view === 'comparador' && <ComparatorPage />}
             {view === 'herramientas' && <ToolsPage />}
             {view === 'blog' && <BlogPage />}
 
