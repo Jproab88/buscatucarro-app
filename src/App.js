@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Car, Loader2, CheckCircle, XCircle, ExternalLink, Shield, Zap, Gauge, Wind, ArrowLeft, Wrench, Calendar, Hash, Calculator } from 'lucide-react';
-// import AdsenseAd from './AdsenseAd'; // Se comenta temporalmente para evitar el error
+import { Search, Car, Loader2, CheckCircle, XCircle, ExternalLink, Shield, Zap, Gauge, Wind, ArrowLeft, Wrench, Newspaper, Calendar, Hash, Calculator } from 'lucide-react';
+
+// --- Datos de Ejemplo para el Blog (mientras no conectamos la DB) ---
+const mockArticles = [
+    { id: '1', title: 'SUVs vs. Sedanes: ¿Cuál es la Mejor Opción para las Vías Colombianas?', summary: 'Analizamos las ventajas y desventajas de cada categoría para ayudarte a decidir cuál se adapta mejor a tu estilo de vida y a las carreteras del país.', content: 'Cuando se trata de comprar un carro en Colombia, una de las decisiones más grandes es elegir entre un SUV y un sedán. Ambos tienen sus méritos, pero están diseñados para necesidades muy diferentes.\n\n### Espacio y Versatilidad: El Territorio del SUV\nLos Sport Utility Vehicles (SUVs) son los reyes de la versatilidad. Su mayor altura sobre el suelo los hace ideales para enfrentar los huecos y las carreteras sin pavimentar que a menudo encontramos fuera de las ciudades principales. Además, su amplio espacio interior y maletero son perfectos para familias o para quienes disfrutan de los viajes de fin de semana.\n\n* **Pros:** Mayor espacio, mejor para terrenos difíciles, sensación de seguridad por la altura.\n* **Contras:** Mayor consumo de combustible, más caros en promedio.\n\n### Eficiencia y Manejo: La Elegancia del Sedán\nPor otro lado, los sedanes ofrecen una experiencia de manejo más ágil y conectada con la carretera. Su centro de gravedad más bajo se traduce en mayor estabilidad en curvas y una conducción más deportiva. Generalmente, son más eficientes en el consumo de combustible, lo que los convierte en una opción inteligente para el tráfico diario de ciudades como Bogotá o Medellín.\n\n* **Pros:** Mejor eficiencia, manejo más deportivo, usualmente más económicos.\n* **Contras:** Menos espacio, no son ideales para terrenos complicados.', imageUrl: 'https://images.pexels.com/photos/1637859/pexels-photo-1637859.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' },
+    { id: '2', title: 'Top 5: Los Carros Más Vendidos en la Historia de Colombia', summary: 'Un recorrido por los modelos icónicos que han conquistado los corazones y las carreteras de los colombianos a lo largo de las décadas.', content: 'Contenido del artículo sobre los carros más vendidos...', imageUrl: 'https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' },
+];
+
 
 // --- Componente de Logo ---
 const Logo = () => (
     <div className="flex items-center space-x-2">
         <Car className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
-        <span className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">BuscaTuCarro IA</span>
+        <span className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">MiCarroIdeal IA</span>
     </div>
 );
 
@@ -120,10 +126,7 @@ const SearchPage = () => {
                 <div className="w-40"></div>
             </div>
             {cars.length > 0 ? (
-                <>
-                    <ComparisonTable cars={cars} />
-                    {/* <AdsenseAd slot="TU_AD_SLOT_ID_1" /> */} {/* Se comenta temporalmente */}
-                </>
+                <ComparisonTable cars={cars} />
             ) : (
                 <div className="text-center py-16 bg-white dark:bg-slate-800 rounded-lg shadow-md">
                     <Car size={48} className="mx-auto text-slate-400" />
@@ -135,7 +138,7 @@ const SearchPage = () => {
     );
 };
 
-// --- NUEVO Componente de la Página de Herramientas ---
+// --- Componente de la Página de Herramientas ---
 const ToolsPage = () => {
     const [city, setCity] = useState('Bogota');
     const [avalúo, setAvalúo] = useState('');
@@ -200,35 +203,89 @@ const ToolsPage = () => {
                     <a href="https://www.runt.com.co/consulta-ciudadana/#/consultaVehiculo" target="_blank" rel="noopener noreferrer" className="w-full bg-blue-500 text-white font-bold py-2 rounded-md hover:bg-blue-600 flex items-center justify-center">Ir al RUNT <ExternalLink size={16} className="ml-2"/></a>
                 </div>
             </div>
-            {/* <AdsenseAd slot="TU_AD_SLOT_ID_2" /> */} {/* Se comenta temporalmente */}
+        </main>
+    );
+};
+
+// --- Componente de la Página del Blog ---
+const BlogPage = () => {
+    const [articles, setArticles] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [selectedArticle, setSelectedArticle] = useState(null);
+
+    useEffect(() => {
+        // En un futuro, aquí llamaríamos a un endpoint /api/get-articles
+        // que leería los artículos desde la base de datos de Firestore.
+        // fetch('/api/get-articles').then(res => res.json()).then(data => {
+        //    setArticles(data);
+        //    setIsLoading(false);
+        // });
+        
+        // Por ahora, usamos los datos de ejemplo.
+        setTimeout(() => {
+            setArticles(mockArticles);
+            setIsLoading(false);
+        }, 1000);
+    }, []);
+
+    if (selectedArticle) {
+        return (
+            <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <button onClick={() => setSelectedArticle(null)} className="flex items-center text-indigo-600 hover:underline font-semibold mb-6"><ArrowLeft className="mr-2" size={20} />Volver al Blog</button>
+                <div className="bg-white dark:bg-slate-800 p-6 md:p-10 rounded-lg shadow-md">
+                    <img src={selectedArticle.imageUrl} alt={selectedArticle.title} className="w-full h-64 md:h-96 object-cover rounded-lg mb-6" />
+                    <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">{selectedArticle.title}</h1>
+                    <div className="prose prose-lg dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: selectedArticle.content.replace(/### (.*)/g, '<h3>$1</h3>').replace(/\* (.*)/g, '<li>$1</li>').replace(/\n\n/g, '<br/><br/>') }} />
+                </div>
+            </main>
+        );
+    }
+
+    return (
+        <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-8 text-center">Blog de Noticias y Consejos</h1>
+            {isLoading ? (
+                <div className="flex justify-center items-center h-64"><Loader2 className="w-12 h-12 text-indigo-500 animate-spin" /></div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {articles.map(article => (
+                        <div key={article.id} onClick={() => setSelectedArticle(article)} className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden cursor-pointer group">
+                            <div className="overflow-hidden h-48"><img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" /></div>
+                            <div className="p-6">
+                                <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{article.title}</h2>
+                                <p className="text-slate-600 dark:text-slate-400 text-sm">{article.summary}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
         </main>
     );
 };
 
 // --- Componente Principal con Navegación ---
 function App() {
-    const [view, setView] = useState('buscador'); // 'buscador' o 'herramientas'
+    const [view, setView] = useState('buscador'); // 'buscador', 'herramientas', o 'blog'
 
     return (
         <div className="bg-slate-100 dark:bg-slate-900 min-h-screen font-sans text-slate-800 dark:text-slate-200 flex flex-col">
             <header className="bg-white/80 dark:bg-slate-900/80 shadow-sm sticky top-0 z-40 backdrop-blur-lg">
                 <nav className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
                     <Logo />
-                    <div className="flex items-center space-x-2 bg-slate-200 dark:bg-slate-800 p-1 rounded-full">
-                        <button onClick={() => setView('buscador')} className={`px-4 py-1.5 rounded-full text-sm font-semibold ${view === 'buscador' ? 'bg-white dark:bg-slate-700 text-indigo-600' : 'text-slate-600 dark:text-slate-300'}`}>
-                            <Search className="w-4 h-4 inline mr-2" />Buscador
-                        </button>
-                        <button onClick={() => setView('herramientas')} className={`px-4 py-1.5 rounded-full text-sm font-semibold ${view === 'herramientas' ? 'bg-white dark:bg-slate-700 text-indigo-600' : 'text-slate-600 dark:text-slate-300'}`}>
-                            <Wrench className="w-4 h-4 inline mr-2" />Herramientas
-                        </button>
+                    <div className="flex items-center space-x-1 bg-slate-200 dark:bg-slate-800 p-1 rounded-full">
+                        <button onClick={() => setView('buscador')} className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${view === 'buscador' ? 'bg-white dark:bg-slate-700 text-indigo-600' : 'text-slate-600 dark:text-slate-300'}`}><Search className="w-4 h-4 inline mr-1.5" />Buscador</button>
+                        <button onClick={() => setView('herramientas')} className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${view === 'herramientas' ? 'bg-white dark:bg-slate-700 text-indigo-600' : 'text-slate-600 dark:text-slate-300'}`}><Wrench className="w-4 h-4 inline mr-1.5" />Herramientas</button>
+                        <button onClick={() => setView('blog')} className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${view === 'blog' ? 'bg-white dark:bg-slate-700 text-indigo-600' : 'text-slate-600 dark:text-slate-300'}`}><Newspaper className="w-4 h-4 inline mr-1.5" />Blog</button>
                     </div>
                 </nav>
             </header>
             
-            {view === 'buscador' ? <SearchPage /> : <ToolsPage />}
+            {view === 'buscador' && <SearchPage />}
+            {view === 'herramientas' && <ToolsPage />}
+            {view === 'blog' && <BlogPage />}
 
             <footer className="w-full text-center p-4 mt-auto">
-                <p className="text-sm text-slate-500 dark:text-slate-400">&copy; {new Date().getFullYear()} BuscaTuCarro IA. Todos los derechos reservados.</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">&copy; {new Date().getFullYear()} MiCarroIdeal IA. Todos los derechos reservados.</p>
             </footer>
         </div>
     );
