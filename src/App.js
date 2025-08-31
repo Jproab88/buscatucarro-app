@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Car, Loader2, CheckCircle, XCircle, ExternalLink, Shield, Zap, Gauge, Wind, ArrowLeft, Wrench, Newspaper, Calendar, Hash, Calculator, GitCompareArrows } from 'lucide-react';
 
-// --- Base de Datos de Vehículos para los Desplegables ---
-const carDatabase = {
-    "Toyota": { "Corolla": ["2023", "2022", "2021"], "RAV4": ["2023", "2022", "2021"], "Hilux": ["2024", "2023", "2022"], },
-    "Mazda": { "3": ["2024", "2023", "2022"], "CX-5": ["2024", "2023", "2022"], "2": ["2023", "2022", "2021"], },
-    "Chevrolet": { "Onix": ["2024", "2023", "2022"], "Tracker": ["2024", "2023", "2022"], "D-Max": ["2023", "2022", "2021"], },
-    "Renault": { "Duster": ["2024", "2023", "2022"], "Kwid": ["2023", "2022", "2021"], "Stepway": ["2023", "2022", "2021"], },
-    "Kia": { "Sportage": ["2023", "2022", "2021"], "Picanto": ["2024", "2023", "2022"], "Rio": ["2023", "2022", "2021"], }
-};
+// La base de datos estática se elimina. Ahora se cargará dinámicamente.
 
 // --- Datos de Ejemplo para el Blog ---
 const mockArticles = [
@@ -22,7 +15,6 @@ const Logo = () => ( <div className="flex items-center space-x-2"><Car className
 
 // --- Componente de la Página de Búsqueda ---
 const SearchPage = () => {
-    // ... (el código de la lógica de búsqueda no cambia)
     const [cars, setCars] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
@@ -63,10 +55,11 @@ const SearchPage = () => {
             </div>
         );
     }
-    // ... (el resto de la lógica de la página de búsqueda no cambia)
+    
     if (isLoading) {
         return ( <div className="flex-grow flex flex-col justify-center items-center text-center px-4"><Loader2 className="w-12 h-12 text-blue-500 animate-spin" /><p className="mt-4 text-gray-500">Analizando el mercado para ti...</p></div>);
     }
+
     return (
         <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
              <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
@@ -83,7 +76,6 @@ const SearchPage = () => {
 
 // --- Componente de la Tabla Comparativa ---
 const ComparisonTable = ({ cars }) => {
-    // ... (la lógica de la tabla no cambia)
     const features = [
         { key: 'pros', label: 'Pros', icon: CheckCircle, color: 'text-green-500' },
         { key: 'cons', label: 'Contras', icon: XCircle, color: 'text-red-500' },
@@ -134,7 +126,6 @@ const ComparisonTable = ({ cars }) => {
 
 // --- Componente de la Página de Herramientas ---
 const ToolsPage = () => {
-    // ... (el código de la lógica no cambia)
     const [city, setCity] = useState('Bogota');
     const [avalúo, setAvalúo] = useState('');
     const [tax, setTax] = useState(null);
@@ -147,7 +138,6 @@ const ToolsPage = () => {
         <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
             <h1 className="text-4xl font-bold text-gray-800 mb-10 text-center">Herramientas del Conductor</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {/* ... (el código de las tarjetas de herramientas ahora tiene mejor diseño) ... */}
                 <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 transition-transform transform hover:-translate-y-2">
                     <div className="flex items-center mb-4"><Calendar className="w-7 h-7 mr-3 text-blue-500" /><h2 className="text-2xl font-bold text-gray-800">Pico y Placa Hoy</h2></div>
                     <select value={city} onChange={(e) => setCity(e.target.value)} className="w-full p-3 mb-4 border border-gray-300 rounded-lg bg-gray-50 text-lg">
@@ -178,7 +168,6 @@ const ToolsPage = () => {
 
 // --- Componente de la Página del Blog ---
 const BlogPage = () => {
-    // ... (el código de la lógica no cambia)
     const [articles, setArticles] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedArticle, setSelectedArticle] = useState(null);
@@ -196,7 +185,7 @@ const BlogPage = () => {
             </main>
         );
     }
-    // ... (el resto de la lógica y el diseño de la página del blog)
+    
     return (
         <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
             <h1 className="text-4xl font-bold text-gray-800 mb-10 text-center">Noticias y Consejos del Motor</h1>
@@ -220,33 +209,66 @@ const BlogPage = () => {
 
 // --- Componente de la Página del Comparador ---
 const ComparatorPage = () => {
-    // ... (la lógica no cambia)
+    const [carDatabase, setCarDatabase] = useState({});
+    const [dbLoading, setDbLoading] = useState(true);
+
+    // useEffect para cargar la base de datos de vehículos desde la API
+    useEffect(() => {
+        const fetchCarDatabase = async () => {
+            setDbLoading(true);
+            try {
+                const response = await fetch('/api/vehicles');
+                if (!response.ok) {
+                    throw new Error('La respuesta de la red no fue correcta');
+                }
+                const data = await response.json();
+                setCarDatabase(data);
+            } catch (error) {
+                console.error("No se pudo cargar la base de datos de vehículos:", error);
+            } finally {
+                setDbLoading(false);
+            }
+        };
+        fetchCarDatabase();
+    }, []);
+
     const initialSlots = [ { id: 1, make: '', model: '', year: '' }, { id: 2, make: '', model: '', year: '' }, { id: 3, make: '', model: '', year: '' }, { id: 4, make: '', model: '', year: '' }, ];
     const [vehicleSlots, setVehicleSlots] = useState(initialSlots);
     const [comparisonResult, setComparisonResult] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    
     const handleSelectorChange = (id, field, value) => { setVehicleSlots(prevSlots => prevSlots.map(slot => { if (slot.id === id) { const newSlot = { ...slot, [field]: value }; if (field === 'make') { newSlot.model = ''; newSlot.year = ''; } if (field === 'model') { newSlot.year = ''; } return newSlot; } return slot; })); };
     const handleCompare = async () => { const vehiclesToCompare = vehicleSlots.filter(slot => slot.make && slot.model && slot.year); if (vehiclesToCompare.length < 2) { alert("Por favor selecciona al menos dos vehículos para comparar."); return; } setIsLoading(true); setComparisonResult([]); try { const response = await fetch('/api/compare', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ vehicles: vehicleSlots }), }); if (!response.ok) { throw new Error('Error en la respuesta de la API'); } const data = await response.json(); setComparisonResult(data); } catch (error) { console.error("Error al comparar:", error); } finally { setIsLoading(false); } };
+    
     const features = [ { key: 'pros', label: 'Pros', icon: CheckCircle, color: 'text-green-500' }, { key: 'cons', label: 'Contras', icon: XCircle, color: 'text-red-500' }, { key: 'airbags', label: 'Seguridad', icon: Shield, color: 'text-blue-500' }, { key: 'horsepower', label: 'Potencia', icon: Zap, color: 'text-yellow-500' }, { key: 'topSpeed', label: 'Vel. Máxima', icon: Wind, color: 'text-cyan-500' }, { key: 'fuelEfficiency', label: 'Consumo', icon: Gauge, color: 'text-orange-500' }, ];
 
     return (
         <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
             <h1 className="text-4xl font-bold text-gray-800 mb-2 text-center">Comparador de Vehículos</h1>
-            <p className="text-center text-gray-600 mb-10">Selecciona hasta 4 vehículos para ver sus características lado a lado.</p>
+            <p className="text-center text-gray-600 mb-10">Selecciona hasta 4 vehículos de nuestra base de datos para ver sus características lado a lado.</p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                  {vehicleSlots.map(slot => (
                     <div key={slot.id} className="bg-white p-4 rounded-2xl shadow-lg border border-gray-200 space-y-4">
                         <h3 className="font-bold text-xl text-center text-gray-700">Vehículo {slot.id}</h3>
-                        <select value={slot.make} onChange={(e) => handleSelectorChange(slot.id, 'make', e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50"> <option value="">Selecciona Marca</option> {Object.keys(carDatabase).map(make => <option key={make} value={make}>{make}</option>)} </select>
-                        <select value={slot.model} onChange={(e) => handleSelectorChange(slot.id, 'model', e.target.value)} disabled={!slot.make} className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 disabled:opacity-50"> <option value="">Selecciona Modelo</option> {slot.make && Object.keys(carDatabase[slot.make]).map(model => <option key={model} value={model}>{model}</option>)} </select>
-                        <select value={slot.year} onChange={(e) => handleSelectorChange(slot.id, 'year', e.target.value)} disabled={!slot.model} className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 disabled:opacity-50"> <option value="">Selecciona Año</option> {slot.model && carDatabase[slot.make][slot.model].map(year => <option key={year} value={year}>{year}</option>)} </select>
+                        <select value={slot.make} onChange={(e) => handleSelectorChange(slot.id, 'make', e.target.value)} disabled={dbLoading} className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 disabled:opacity-50">
+                            <option value="">{dbLoading ? "Cargando Marcas..." : "Selecciona Marca"}</option>
+                            {Object.keys(carDatabase).map(make => <option key={make} value={make}>{make}</option>)}
+                        </select>
+                        <select value={slot.model} onChange={(e) => handleSelectorChange(slot.id, 'model', e.target.value)} disabled={!slot.make} className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 disabled:opacity-50">
+                            <option value="">Selecciona Modelo</option>
+                            {slot.make && carDatabase[slot.make] && Object.keys(carDatabase[slot.make]).map(model => <option key={model} value={model}>{model}</option>)}
+                        </select>
+                        <select value={slot.year} onChange={(e) => handleSelectorChange(slot.id, 'year', e.target.value)} disabled={!slot.model} className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 disabled:opacity-50">
+                            <option value="">Selecciona Año</option>
+                            {slot.model && carDatabase[slot.make] && carDatabase[slot.make][slot.model] && carDatabase[slot.make][slot.model].map(year => <option key={year} value={year}>{year}</option>)}
+                        </select>
                     </div>
                 ))}
             </div>
-            {/* ... (el resto de la lógica y diseño del comparador) ... */}
+            
             <div className="text-center mb-8">
-                <button onClick={handleCompare} disabled={isLoading} className="bg-blue-600 text-white font-bold px-10 py-4 rounded-full hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-xl disabled:bg-blue-400 flex items-center justify-center mx-auto text-lg">
+                <button onClick={handleCompare} disabled={isLoading || dbLoading} className="bg-blue-600 text-white font-bold px-10 py-4 rounded-full hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-xl disabled:bg-blue-400 flex items-center justify-center mx-auto text-lg">
                     {isLoading ? <><Loader2 className="w-6 h-6 mr-3 animate-spin" /> Comparando...</> : <><GitCompareArrows className="w-6 h-6 mr-3" /> Comparar Vehículos</>}
                 </button>
             </div>
@@ -288,14 +310,6 @@ function App() {
         </div>
     );
 }
-
-// Para evitar errores de "no definido", re-declaro los componentes que fueron colapsados arriba.
-const OldComparisonTable = ({ cars }) => { /* ... */ };
-const OldSearchPage = () => { /* ... */ };
-const OldToolsPage = () => { /* ... */ };
-const OldBlogPage = () => { /* ... */ };
-const OldComparatorPage = () => { /* ... */ };
-
 
 export default App;
 
