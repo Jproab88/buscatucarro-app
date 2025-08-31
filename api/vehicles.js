@@ -1,8 +1,8 @@
 // api/vehicles.js
-import carList from './vehicles.json';
+import carList from './vehicle-data.json';
 
 // Esta función ahora procesa los datos desde el archivo JSON local.
-function getVehiclesFromLocalFile() {
+function getVehiclosDesdeArchivoLocal() {
   
   // Procesamos la lista plana de carros para crear la estructura anidada que necesita el frontend.
   const formattedData = {};
@@ -33,7 +33,7 @@ function getVehiclesFromLocalFile() {
 
 export default async function handler(request, response) {
   try {
-    const vehicles = getVehiclesFromLocalFile();
+    const vehicles = getVehiclosDesdeArchivoLocal();
     // Devolvemos los datos con una cabecera de caché para optimizar el rendimiento.
     response.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate'); // Cache por 24 horas
     return response.status(200).json(vehicles);
