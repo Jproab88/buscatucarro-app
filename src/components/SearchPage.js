@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Car, Loader2, ArrowLeft, CheckCircle, XCircle, Shield, Zap, Wind, Gauge, ExternalLink } from 'lucide-react';
 
-// --- Componente de la Tabla Comparativa Rediseñada ---
+// --- Componente de la Tabla Comparativa ---
 const ComparisonTable = ({ cars }) => {
     const features = [
         { key: 'pros', label: 'Pros', icon: CheckCircle, color: 'text-green-500' },
@@ -52,7 +52,6 @@ const ComparisonTable = ({ cars }) => {
 };
 
 
-// --- Componente de la Página de Búsqueda ---
 const SearchPage = () => {
     const [cars, setCars] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -78,7 +77,6 @@ const SearchPage = () => {
         }
     };
 
-    // --- Vista de Resultados ---
     if (isLoading || hasSearched) {
         return (
              <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
@@ -98,10 +96,9 @@ const SearchPage = () => {
         );
     }
     
-    // --- Vista Inicial de Búsqueda ---
     return (
-        <div className="flex-grow flex flex-col justify-center items-center text-center px-4">
-            <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]">
+        <div className="min-h-screen flex flex-col justify-center items-center text-center px-4">
+             <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]">
                 <div className="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_500px_at_50%_200px,#C9EBFF,transparent)]"></div>
             </div>
             
@@ -133,4 +130,3 @@ const SearchPage = () => {
 };
 
 export default SearchPage;
-
