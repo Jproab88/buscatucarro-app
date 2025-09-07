@@ -41,16 +41,35 @@ const SearchPage = () => {
 
     if (!hasSearched && !isLoading) {
         return (
-            <div className="flex-grow flex flex-col justify-center items-center text-center px-4 -mt-16">
+            // CONTENEDOR PRINCIPAL CENTRADO Y CON FONDO DE DEPURACIÓN
+            <div className="flex-grow flex flex-col justify-center items-center text-center px-4 bg-green-100">
+                 {/* Fondo decorativo opcional */}
                  <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]"><div className="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_500px_at_50%_200px,#C9EBFF,transparent)]"></div></div>
-                <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 mb-4 tracking-tighter">Encuentra tu Carro Ideal.</h1>
-                <p className="text-lg text-gray-600 max-w-xl mx-auto mb-8">Describe el carro de tus sueños con IA y obtén una comparativa instantánea de las mejores opciones del mercado.</p>
-                <div className="w-full max-w-2xl">
-                    <form onSubmit={handleSearch} className="relative shadow-2xl shadow-blue-200/50">
-                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" size={24} />
-                        <input type="text" name="keyword" placeholder="Ej: 'SUV cómoda y segura para la familia'" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} className="w-full pl-16 pr-36 py-5 border-2 border-transparent rounded-full focus:ring-4 focus:ring-blue-300 focus:border-blue-500 text-lg transition-shadow" />
-                        <button type="submit" className="absolute right-2.5 top-1/2 -translate-y-1/2 bg-blue-600 text-white font-bold px-7 py-3 rounded-full hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg">Buscar</button>
-                    </form>
+                
+                {/* CONTENIDO CENTRADO */}
+                <div className="w-full flex flex-col items-center">
+                    <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 mb-4 tracking-tighter">Encuentra tu Carro Ideal.</h1>
+                    <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-10">Describe el carro de tus sueños con IA y obtén una comparativa instantánea de las mejores opciones del mercado.</p>
+                    
+                    {/* BARRA DE BÚSQUEDA MÁS GRANDE */}
+                    <div className="w-full max-w-3xl">
+                        <form onSubmit={handleSearch} className="relative shadow-2xl shadow-blue-200/50">
+                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" size={28} />
+                            <input 
+                                type="text" 
+                                name="keyword" 
+                                placeholder="Ej: 'SUV cómoda, segura para la familia y económica'" 
+                                value={searchInput} 
+                                onChange={(e) => setSearchInput(e.target.value)} 
+                                className="w-full pl-16 pr-40 py-6 border-2 border-transparent rounded-full focus:ring-4 focus:ring-blue-300 focus:border-blue-500 text-xl transition-shadow" 
+                            />
+                            <button 
+                                type="submit" 
+                                className="absolute right-3 top-1/2 -translate-y-1/2 bg-blue-600 text-white font-bold px-8 py-4 rounded-full hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg text-lg">
+                                Buscar
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         );
@@ -299,10 +318,12 @@ function App() {
                 </nav>
             </header>
             
-            {view === 'buscador' && <SearchPage />}
-            {view === 'comparador' && <ComparatorPage />}
-            {view === 'herramientas' && <ToolsPage />}
-            {view === 'blog' && <BlogPage />}
+            <div className="flex-grow">
+                {view === 'buscador' && <SearchPage />}
+                {view === 'comparador' && <ComparatorPage />}
+                {view === 'herramientas' && <ToolsPage />}
+                {view === 'blog' && <BlogPage />}
+            </div>
 
             <footer className="w-full text-center p-6 mt-auto bg-gray-100 border-t border-gray-200">
                 <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} MiCarroIdeal. Creado con Inteligencia Artificial.</p>
@@ -312,4 +333,3 @@ function App() {
 }
 
 export default App;
-
