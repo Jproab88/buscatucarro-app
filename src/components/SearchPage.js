@@ -62,7 +62,7 @@ const SearchPage = () => {
         e.preventDefault();
         if (!searchInput.trim()) return;
         setIsLoading(true);
-        setHasSearched(false);
+        setHasSearched(true); // Move this here to immediately switch view
         try {
             const response = await fetch(`/api/search?q=${encodeURIComponent(searchInput)}`);
             if (!response.ok) { throw new Error(`Error de la API: ${response.statusText}`); }
@@ -73,11 +73,11 @@ const SearchPage = () => {
             setCars([]);
         } finally {
             setIsLoading(false);
-            setHasSearched(true);
         }
     };
 
-    if (isLoading || hasSearched) {
+    // --- Vista de Resultados ---
+    if (hasSearched) {
         return (
              <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
                  <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
@@ -96,12 +96,13 @@ const SearchPage = () => {
         );
     }
     
+    // --- Vista Inicial de Búsqueda (Diseño de ChatGPT) ---
     return (
-        <div className="min-h-screen flex flex-col justify-center items-center text-center px-4">
-             <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]">
+        <div className="min-h-full flex flex-col justify-center items-center text-center px-4">
+            <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]">
                 <div className="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_500px_at_50%_200px,#C9EBFF,transparent)]"></div>
             </div>
-            
+        
             <div className="w-full flex flex-col items-center">
                 <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 mb-4 tracking-tighter">Encuentra tu Carro Ideal.</h1>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-10">Describe el carro de tus sueños con IA y obtén una comparativa instantánea de las mejores opciones del mercado.</p>
@@ -115,11 +116,11 @@ const SearchPage = () => {
                             placeholder="Ej: 'SUV cómoda, segura para la familia y económica'"
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
-                            className="w-full pl-20 pr-40 py-6 border-2 border-transparent rounded-full focus:ring-4 focus:ring-blue-300 focus:border-blue-500 text-xl transition-shadow"
+                            className="w-full pl-20 pr-48 py-7 text-2xl border-2 border-transparent rounded-full focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-shadow"
                         />
                         <button
                             type="submit"
-                            className="absolute right-3 top-1/2 -translate-y-1/2 bg-blue-600 text-white font-bold px-8 py-4 rounded-full hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg text-lg">
+                            className="absolute right-3 top-1/2 -translate-y-1/2 bg-blue-600 text-white font-bold px-10 py-5 rounded-full hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg text-xl">
                             Buscar
                         </button>
                     </form>
