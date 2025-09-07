@@ -1,10 +1,34 @@
 // src/components/SearchPage.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Search, Car, Loader2, ArrowLeft, CheckCircle, XCircle, Shield, 
   Zap, Wind, Gauge, ExternalLink 
 } from 'lucide-react';
 import logo from '../assets/TuCarroIdeal.png';
+
+// --- Componente para el Bloque de Anuncios de AdSense ---
+// NOTE: This component is currently not used in the main layout but is kept for future use.
+const AdsenseAd = ({ adSlot }) => {
+    useEffect(() => {
+        try {
+            (window.adsbygoogle = window.adsbygoogle || []).push({});
+        } catch (e) {
+            console.error("Error al cargar el anuncio de AdSense:", e);
+        }
+    }, []);
+
+    return (
+        <div className="my-8 text-center" aria-hidden="true">
+            <ins className="adsbygoogle"
+                 style={{ display: 'block' }}
+                 data-ad-client="ca-pub-1579809429808109" // Tu ID de cliente de AdSense
+                 data-ad-slot={adSlot} // El ID específico de este bloque de anuncio
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+        </div>
+    );
+};
+
 
 // --- Componente de la Tabla Comparativa ---
 const ComparisonTable = ({ cars }) => {
@@ -186,3 +210,4 @@ const SearchPage = () => {
 };
 
 export default SearchPage;
+
