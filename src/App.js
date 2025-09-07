@@ -43,8 +43,10 @@ const SearchPage = () => {
         return (
             // CONTENEDOR PRINCIPAL CENTRADO Y CON FONDO DE DEPURACIÓN
             <div className="flex-grow flex flex-col justify-center items-center text-center px-4 bg-green-100">
-                 {/* Fondo decorativo opcional */}
-                 <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]"><div className="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_500px_at_50%_200px,#C9EBFF,transparent)]"></div></div>
+                
+                {/* ---- ¡SOSPECHOSO PRINCIPAL! --- He comentado este fondo decorativo */}
+                {/* <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]"><div className="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_500px_at_50%_200px,#C9EBFF,transparent)]"></div></div>
+                */}
                 
                 {/* CONTENIDO CENTRADO */}
                 <div className="w-full flex flex-col items-center">
@@ -54,7 +56,7 @@ const SearchPage = () => {
                     {/* BARRA DE BÚSQUEDA MÁS GRANDE */}
                     <div className="w-full max-w-3xl">
                         <form onSubmit={handleSearch} className="relative shadow-2xl shadow-blue-200/50">
-                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" size={28} />
+                            <Search className="absolute left-6 top-1_2 -translate-y-1_2 text-gray-400" size={28} />
                             <input 
                                 type="text" 
                                 name="keyword" 
@@ -65,7 +67,7 @@ const SearchPage = () => {
                             />
                             <button 
                                 type="submit" 
-                                className="absolute right-3 top-1/2 -translate-y-1/2 bg-blue-600 text-white font-bold px-8 py-4 rounded-full hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg text-lg">
+                                className="absolute right-3 top-1_2 -translate-y-1_2 bg-blue-600 text-white font-bold px-8 py-4 rounded-full hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg text-lg">
                                 Buscar
                             </button>
                         </form>
@@ -333,3 +335,4 @@ function App() {
 }
 
 export default App;
+
