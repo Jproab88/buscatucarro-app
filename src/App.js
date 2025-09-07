@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Car, Loader2, CheckCircle, XCircle, ExternalLink, Shield, Zap, Gauge, Wind, ArrowLeft, Wrench, Newspaper, Calendar, Hash, Calculator, GitCompareArrows } from 'lucide-react';
-
-// La base de datos estática se elimina. Ahora se cargará dinámicamente.
+import SearchPage from './components/SearchPage'; // Importa el componente de la página de búsqueda
 
 // --- Datos de Ejemplo para el Blog ---
 const mockArticles = [
@@ -12,88 +11,6 @@ const mockArticles = [
 
 // --- Componente de Logo ---
 const Logo = () => ( <div className="flex items-center space-x-2"><Car className="h-8 w-8 text-blue-600" /><span className="text-2xl font-bold text-gray-800 tracking-tight">MiCarroIdeal</span></div> );
-
-// --- Componente de la Página de Búsqueda ---
-const SearchPage = () => {
-    const [cars, setCars] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [hasSearched, setHasSearched] = useState(false);
-    const [searchInput, setSearchInput] = useState('');
-
-    const handleSearch = async (e) => {
-        e.preventDefault();
-        if (!searchInput.trim()) return;
-        setIsLoading(true);
-        setHasSearched(false);
-        try {
-            const response = await fetch(`/api/search?q=${encodeURIComponent(searchInput)}`);
-            if (!response.ok) { throw new Error(`Error de la API: ${response.statusText}`); }
-            const results = await response.json();
-            setCars(results);
-        } catch (error) {
-            console.error("Error al buscar:", error);
-            setCars([]); 
-        } finally {
-            setIsLoading(false);
-            setHasSearched(true);
-        }
-    };
-
-    if (!hasSearched && !isLoading) {
-        return (
-            // CONTENEDOR PRINCIPAL CENTRADO Y CON FONDO DE DEPURACIÓN
-            <div className="flex-grow flex flex-col justify-center items-center text-center px-4 bg-green-100">
-                
-                {/* ---- ¡SOSPECHOSO PRINCIPAL! --- He comentado este fondo decorativo */}
-                {/* <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]"><div className="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_500px_at_50%_200px,#C9EBFF,transparent)]"></div></div>
-                */}
-                
-                {/* CONTENIDO CENTRADO */}
-                <div className="w-full flex flex-col items-center">
-                    <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 mb-4 tracking-tighter">Encuentra tu Carro Ideal.</h1>
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-10">Describe el carro de tus sueños con IA y obtén una comparativa instantánea de las mejores opciones del mercado.</p>
-                    
-                    {/* BARRA DE BÚSQUEDA MÁS GRANDE */}
-                    <div className="w-full max-w-3xl">
-                        <form onSubmit={handleSearch} className="relative shadow-2xl shadow-blue-200/50">
-                            <Search className="absolute left-6 top-1_2 -translate-y-1_2 text-gray-400" size={28} />
-                            <input 
-                                type="text" 
-                                name="keyword" 
-                                placeholder="Ej: 'SUV cómoda, segura para la familia y económica'" 
-                                value={searchInput} 
-                                onChange={(e) => setSearchInput(e.target.value)} 
-                                className="w-full pl-16 pr-40 py-6 border-2 border-transparent rounded-full focus:ring-4 focus:ring-blue-300 focus:border-blue-500 text-xl transition-shadow" 
-                            />
-                            <button 
-                                type="submit" 
-                                className="absolute right-3 top-1_2 -translate-y-1_2 bg-blue-600 text-white font-bold px-8 py-4 rounded-full hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg text-lg">
-                                Buscar
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-    
-    if (isLoading) {
-        return ( <div className="flex-grow flex flex-col justify-center items-center text-center px-4"><Loader2 className="w-12 h-12 text-blue-500 animate-spin" /><p className="mt-4 text-gray-500">Analizando el mercado para ti...</p></div>);
-    }
-
-    return (
-        <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
-             <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
-                <button onClick={() => { setHasSearched(false); setCars([]); setSearchInput(''); }} className="flex items-center text-blue-600 hover:text-blue-800 font-semibold transition-colors"><ArrowLeft className="mr-2" size={20} />Nueva Búsqueda</button>
-                <h2 className="text-3xl font-bold text-gray-800 text-center">Aquí tienes tu Comparativa Inteligente</h2>
-                <div className="w-40 hidden sm:block"></div>
-            </div>
-            {cars.length > 0 ? ( <ComparisonTable cars={cars} /> ) : (
-                <div className="text-center py-16 bg-white rounded-lg shadow-md"><Car size={48} className="mx-auto text-gray-400" /><h3 className="mt-2 text-xl font-semibold text-gray-900">No se encontraron vehículos</h3><p className="mt-1 text-sm text-gray-500">Intenta con una descripción diferente.</p></div>
-            )}
-        </main>
-    );
-};
 
 // --- Componente de la Tabla Comparativa ---
 const ComparisonTable = ({ cars }) => {
@@ -233,7 +150,6 @@ const ComparatorPage = () => {
     const [carDatabase, setCarDatabase] = useState({});
     const [dbLoading, setDbLoading] = useState(true);
 
-    // useEffect para cargar la base de datos de vehículos desde la API
     useEffect(() => {
         const fetchCarDatabase = async () => {
             setDbLoading(true);
@@ -261,8 +177,6 @@ const ComparatorPage = () => {
     const handleSelectorChange = (id, field, value) => { setVehicleSlots(prevSlots => prevSlots.map(slot => { if (slot.id === id) { const newSlot = { ...slot, [field]: value }; if (field === 'make') { newSlot.model = ''; newSlot.year = ''; } if (field === 'model') { newSlot.year = ''; } return newSlot; } return slot; })); };
     const handleCompare = async () => { const vehiclesToCompare = vehicleSlots.filter(slot => slot.make && slot.model && slot.year); if (vehiclesToCompare.length < 2) { alert("Por favor selecciona al menos dos vehículos para comparar."); return; } setIsLoading(true); setComparisonResult([]); try { const response = await fetch('/api/compare', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ vehicles: vehicleSlots }), }); if (!response.ok) { throw new Error('Error en la respuesta de la API'); } const data = await response.json(); setComparisonResult(data); } catch (error) { console.error("Error al comparar:", error); } finally { setIsLoading(false); } };
     
-    const features = [ { key: 'pros', label: 'Pros', icon: CheckCircle, color: 'text-green-500' }, { key: 'cons', label: 'Contras', icon: XCircle, color: 'text-red-500' }, { key: 'airbags', label: 'Seguridad', icon: Shield, color: 'text-blue-500' }, { key: 'horsepower', label: 'Potencia', icon: Zap, color: 'text-yellow-500' }, { key: 'topSpeed', label: 'Vel. Máxima', icon: Wind, color: 'text-cyan-500' }, { key: 'fuelEfficiency', label: 'Consumo', icon: Gauge, color: 'text-orange-500' }, ];
-
     return (
         <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
             <h1 className="text-4xl font-bold text-gray-800 mb-2 text-center">Comparador de Vehículos</h1>
@@ -335,4 +249,3 @@ function App() {
 }
 
 export default App;
-
