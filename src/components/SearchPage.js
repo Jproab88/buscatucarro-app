@@ -4,7 +4,7 @@ import {
   Search, Car, Loader2, ArrowLeft, CheckCircle, XCircle, Shield, 
   Zap, Wind, Gauge, ExternalLink 
 } from 'lucide-react';
-// import logo from '../assets/TuCarroIdeal.png'; // Se elimina la dependencia del archivo de logo
+import logo from '../assets/TuCarroIdeal.png'; // <-- Se vuelve a activar la importación del logo
 
 // --- Componente para el Bloque de Anuncios de AdSense ---
 // NOTE: This component is currently not used in the main layout but is kept for future use.
@@ -136,10 +136,10 @@ const SearchPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header con Logo (Corregido) */}
+      {/* Header con Logo (Corregido para usar la imagen) */}
       <header className="bg-blue-900 text-white px-6 py-4 flex items-center justify-between shadow-md">
-        <div className="flex items-center space-x-3">
-          <Car className="h-10 w-10 text-white"/>
+        <div className="flex items-center">
+          <img src={logo} alt="MiCarroIdeal Logo" className="h-10 mr-3"/>
           <h1 className="text-xl font-bold">MiCarroIdeal</h1>
         </div>
       </header>
